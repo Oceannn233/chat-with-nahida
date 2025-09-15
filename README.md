@@ -1,4 +1,4 @@
-# 与纳西妲的AI语音对话 Web应用
+# chat with nahida~
 
 一个基于 Flask 和 SiliconFlow API 构建的多模态AI聊天应用。你只需要有一个硅基流动的apikey，就可以与扮纳西妲进行实时的、带有个性化语音和场景图片生成的连续对话。
 
