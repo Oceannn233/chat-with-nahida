@@ -14,7 +14,7 @@
 ## 🖼️ 界面预览
 
 ![应用主界面](screenshots/1.png)
-*<p align="center">对话的界面演示</p>*
+*<p align="center">同时也会听到纳西妲的声音哦~</p>*
 
 ## 🛠️ 技术栈
 
