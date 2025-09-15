@@ -26,7 +26,7 @@
 1. **克隆仓库**
 
    ```bash
-   git clone [ https://github.com/Oceannn233/chat-with-nahida.git]( https://github.com/Oceannn233/chat-with-nahida.git)
+   git clone https://github.com/Oceannn233/chat-with-nahida.git
    cd chat-with-nahida
    ```
 
