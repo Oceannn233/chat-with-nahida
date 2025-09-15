@@ -44,7 +44,7 @@
      SILICONFLOW_API_KEY="sk-xxxxxxxxxx"
      ```
 
-4. **准备静态资源**（如果你想要修改为其他角色可用）
+4. **准备静态资源**（纳西妲的已经放好，如果你想要修改为其他角色可用）
 
    - 将您的语音克隆参考音频放入项目根目录 (例如 `Ref_audio.mp3`)。
    - 将UI所需的图片 (`nahi_icon.jpeg`, `nahi_background.png`, `user_icon.png`) 放入 `static` 文件夹。
