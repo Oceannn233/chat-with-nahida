@@ -20,7 +20,7 @@
 
 - **后端**: Python, Flask
 - **AI模型 API**: 硅基流动 (SiliconFlow)
-  - 对话: `zai-org/GLM-4.5`, `deepseek-ai/DeepSeek-V3.1`
+  - 对话: `moonshotai/Kimi-K2-Instruct-0905`, `deepseek-ai/DeepSeek-V3.1`
   - 绘画: `Qwen/Qwen-Image`
   - 语音: `FunAudioLLM/CosyVoice2-0.5B`
 - **前端**: HTML, CSS, JavaScript 
