@@ -14,7 +14,7 @@ API_KEY = os.getenv("SILICONFLOW_API_KEY", "sk-xxxxx")
 CONVERSATIONAL_AGENT_MODEL = "deepseek-ai/DeepSeek-V3.1"
 
 # 2. 提示词工程师模型 (负责生成高质量英文绘画指令，推荐使用擅长复杂指令遵循的模型)
-PROMPT_ENGINEER_MODEL = "moonshotai/Kimi-K2-Instruct-0905" # 强烈推荐Kimi，它对复杂指令的遵循效果经过验证
+PROMPT_ENGINEER_MODEL = "Qwen/Qwen3-235B-A22B-Instruct-2507" # 强烈推荐Qwen3，它对复杂指令的遵循效果经过验证
 
 # 3. 其他模型
 IMAGE_MODEL_NAME = "Qwen/Qwen-Image"
