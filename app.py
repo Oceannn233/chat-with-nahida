@@ -7,7 +7,7 @@ from openai import OpenAI
 import logging
 
 # 填入硅基流动apikey
-API_KEY = os.getenv("SILICONFLOW_API_KEY", "sk-xxxx")
+API_KEY = os.getenv("SILICONFLOW_API_KEY", "sk-xxxxx")
 
 # 1. 对话代理模型 (扮演纳西妲，可自由更换为您喜欢的对话模型)
 CONVERSATIONAL_AGENT_MODEL = "deepseek-ai/DeepSeek-V3.1"
@@ -18,6 +18,7 @@ PROMPT_ENGINEER_MODEL = "zai-org/GLM-4.5"
 # 3. 其他模型
 IMAGE_MODEL_NAME = "Qwen/Qwen-Image"
 TTS_MODEL_NAME = "FunAudioLLM/CosyVoice2-0.5B" 
+#同时调用模型较多，请注意key的余额情况，每一次对话大约消耗0.3额度（但由于硅基流动的赠费机制实际成本远低于此）
 
 ##运行app.py后，打开终端中的端口即可，默认"http://127.0.0.1:1027"
 
@@ -50,9 +51,10 @@ Follow this professional workflow:
 **4. Final Output Format (Strict):**
 * Your output **MUST** be a single, cohesive paragraph of English text.
 * **DO NOT** use bullet points, labels, or any explanations. Combine all chosen elements into one powerful prompt.
-""" 
-REFERENCE_AUDIO_PATH = "Ref_audio.mp3"
-TEXT_IN_REFERENCE_AUDIO = "初次见面，我已经关注你很久了。我叫纳西妲，别看我像个孩子，我比任何一位大人都了解这个世界。所以，我可以用我的知识，换取你路上的见闻吗？" # (内容不变，为节省空间省略)
+"""
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+REFERENCE_AUDIO_PATH = os.path.join(BASE_DIR, "Ref_audio.mp3") 
+TEXT_IN_REFERENCE_AUDIO = "初次见面，我已经关注你很久了。我叫纳西妲，别看我像个孩子，我比任何一位大人都了解这个世界。所以，我可以用我的知识，换取你路上的见闻吗？" 
 MAX_TOKENS = 2048
 TEMPERATURE = 0.7
 # ------------------- 2. Flask 应用实现 -------------------
@@ -162,5 +164,5 @@ def chat():
 
 if __name__ == '__main__':
     app.logger.info("应用启动中...")
-    app.logger.info(f"请在浏览器中打开 http://127.0.0.1:1027") # nahida's birthday~
+    app.logger.info(f"请在浏览器中打开 http://127.0.0.1:1027") # 1027 is nahida's birthday~
     app.run(host='0.0.0.0', port=1027, debug=False)
