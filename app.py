@@ -65,6 +65,7 @@ furina (genshin impact), long white hair with blue accents, heterochromia, stand
 [NEGATIVE]
 (worst quality, low quality:1.4), blurry, ugly, jpeg artifacts, signature, watermark, text, username, error, dark hair, black hair, brown hair, blonde hair, yellow hair, horns, old, uniform eye color
 """
+#参考音频路径，如果想克隆其他角色音色可替换相应音频，10s以内，需在下方给出参考音频的准确文本
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 REFERENCE_AUDIO_PATH = os.path.join(BASE_DIR, "Ref_audio.mp3") 
 TEXT_IN_REFERENCE_AUDIO = "初次见面，我已经关注你很久了。我叫纳西妲，别看我像个孩子，我比任何一位大人都了解这个世界。所以，我可以用我的知识，换取你路上的见闻吗？" 
