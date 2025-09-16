@@ -32,7 +32,7 @@
 
    ```bash
    git clone https://github.com/Oceannn233/chat-with-nahida.git
-   cd chat-with-nahida
+   cd  x\your_path\chat-with-nahida-main
    ```
 
 2. **安装依赖**
