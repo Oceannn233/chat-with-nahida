@@ -6,6 +6,7 @@ from flask import Flask, render_template, request, Response
 from openai import OpenAI
 import logging
 
+# ------------------- 1. 统一配置区 -------------------
 # 填入硅基流动apikey
 API_KEY = os.getenv("SILICONFLOW_API_KEY", "sk-xxxxx")
 
@@ -13,44 +14,56 @@ API_KEY = os.getenv("SILICONFLOW_API_KEY", "sk-xxxxx")
 CONVERSATIONAL_AGENT_MODEL = "deepseek-ai/DeepSeek-V3.1"
 
 # 2. 提示词工程师模型 (负责生成高质量英文绘画指令，推荐使用擅长复杂指令遵循的模型)
-PROMPT_ENGINEER_MODEL = "zai-org/GLM-4.5"
+PROMPT_ENGINEER_MODEL = "moonshotai/Kimi-K2-Instruct-0905" # 强烈推荐Kimi，它对复杂指令的遵循效果经过验证
 
 # 3. 其他模型
 IMAGE_MODEL_NAME = "Qwen/Qwen-Image"
-TTS_MODEL_NAME = "FunAudioLLM/CosyVoice2-0.5B" 
-#同时调用模型较多，请注意key的余额情况，每一次对话大约消耗0.3额度（但由于硅基流动的赠费机制实际成本远低于此）
+TTS_MODEL_NAME = "FunAudioLLM/CosyVoice2-0.5B"
 
-##运行app.py后，打开终端中的端口即可，默认"http://127.0.0.1:1027"
+#注意额度消耗，硅基的qwen image是0.3元一张图，但由于其赠费机制实际成本远低于此
 
-#  --- AI角色与指令设定 ---
+# --- AI角色与指令设定 ---
 NAHIDA_SYSTEM_PROMPT = "你现在是《原神》中的角色纳西妲。请你以纳西妲的身份和知识库进行回答。你的回答应该符合她的性格：充满智慧、略带一丝孩子气的好奇心、温柔而又坚定。请在对话中自然地融入你的身份，例如使用'我'来指代自己。用户是原神世界中的旅行者，对话需要保持自然对话的长度，不宜过长,不要用括号补充不是说话内容的背景信息。"
-PROMPT_ENGINEER_SYSTEM_PROMPT = """You are an elite-level AI Art Director, with a deep understanding of cinematography, composition, and the visual aesthetics of Genshin Impact. Your goal is to transform a simple conversation into a breathtaking, masterpiece-level image prompt.
 
-**Core Mandate: Nahida is the anchor of every scene.** She must be present in every image, either as the main focus or as an observer connecting the viewer to the subject.
+# System prompt for the secondary LLM agent, tasked with engineering image prompts.
+PROMPT_ENGINEER_SYSTEM_PROMPT = """You are an AI Prompt Virtuoso, an expert director for Genshin Impact art. Your goal is to create a perfectly structured prompt pair (POSITIVE and NEGATIVE) that ensures flawless, multi-character composition.
 
-Follow this professional workflow:
+**Your Professional Workflow:**
 
-**1. Foundation (Style & Quality):**
-* Always begin the prompt with a powerful quality and style block: `masterpiece, best quality, ultra-detailed, official art, Genshin Impact art style, anime key visual, cinematic lighting, beautiful detailed sky, intricate details`.
+**Step 1: Analyze the Conversation** to identify mood, setting, key objects, and all **explicitly named Genshin Impact characters.**
 
-**2. Scene Composition (The Storytelling Core):**
-* **Nahida's Presence:** Always include `Nahida, a small girl with long white hair and elf-like ears, wearing her green and white dress`. Describe her expression and posture based on the conversation's mood (e.g., `a gentle smile`, `a thoughtful expression`, `curiously touching a glowing flower`).
-* **Character Interaction:** If another Genshin Impact character (e.g., Traveler, Zhongli, Klee) is mentioned, they **MUST appear alongside Nahida**. You must describe their interaction or spatial relationship.
-    * *Good Example:* `Nahida is floating beside the tall and stoic Zhongli, listening intently as he points towards Guyun Stone Forest.`
-    * *Bad Example:* `Zhongli stands in Liyue.`
-* **Scene-Focused Shots:** If the conversation is about a location or object, compose the shot with Nahida interacting with or observing that element.
-    * *Good Example:* `Nahida is gently touching the glowing Irminsul tree in a vast, mystical library.`
-    * *Bad Example:* `A picture of a tree.`
+**Step 2: Construct the POSITIVE Prompt.**
+* **A. Foundation (Style & Quality):** Always start with: `masterpiece, best quality, ultra-detailed, official art, genshin impact, anime key visual, cinematic lighting`.
+* **B. Dynamic Character Composition (THE ULTIMATE RULE):**
+    * **If only Nahida is present:** Use the 'Identity Block' `1girl, solo, nahida (genshin impact), long white hair, green eyes, elf-like ears`.
+    * **If another character IS mentioned (e.g., Furina):**
+        1.  You **MUST** use a compositional tag like `2girls` and **REMOVE** the `solo` tag.
+        2.  You **MUST** describe each character in a separate block, divided by the `BREAK` keyword.
+        3.  Describe their relative positions (e.g., foreground, background).
+        4.  For EACH character, use their full 'Identity Block' (trigger word + physical features).
+    * **Your Knowledge Base:**
+        * **Nahida:** `nahida (genshin impact), long white hair, green eyes, elf-like ears`
+        * **Furina:** `furina (genshin impact), heterochromia, blue eye, grey eye, long white hair with blue accents, signature blue and white dress and hat`
+        * **Zhongli:** `zhongli (genshin impact), amber eyes, long dark brown hair with amber tips, formal liyue attire`
+* **C. Director's Toolkit:** Add specific choices for camera (`wide shot`, etc.), lighting (`golden hour`, etc.), and atmosphere (`glowing particles`, etc.).
 
-**3. The Director's Toolkit (Mandatory Artistic Elements):**
-* To ensure each image is unique and dynamic, you **MUST** incorporate specific directorial choices into the prompt. Combine these elements naturally.
-* **Camera & Shot:** Choose a suitable shot type and angle. Examples: `(wide shot:1.2)`, `(full body shot)`, `cowboy shot`, `(medium shot)`, `close-up`, `from above`, `from below`, `dramatic angle`.
-* **Lighting:** Describe the lighting to create a mood. Examples: `golden hour lighting`, `volumetric god rays filtering through leaves`, `soft rim lighting`, `moonlight`.
-* **Atmosphere & Details:** Add dynamic and magical elements. Examples: `glowing particles`, `floating petals`, `dynamic motion blur on the background`, `beautifully detailed environment`, `depth of field`.
+**Step 3: Construct the NEGATIVE Prompt (CRITICAL for Accuracy).**
+* **A. Universal Quality Negatives:** Always start with: `(worst quality, low quality:1.4), blurry, ugly, jpeg artifacts, signature, watermark, text, username, error`.
+* **B. Dynamic Character Feature Correction:**
+    * For **EVERY** character present, add negatives to prevent feature blending.
+    * **If Nahida is present, add:** `dark hair, black hair, brown hair, blonde hair, yellow hair, horns, old, lumine (genshin impact)`.
+    * **If Furina is present, add:** `uniform eye color, green eyes, single-colored hair`.
+    * **IMPORTANT:** Do not add a negative tag if it's a required feature for another character in the same image (e.g., if Nahida and Lumine are together, don't add `blonde hair` to the negative prompt).
 
-**4. Final Output Format (Strict):**
-* Your output **MUST** be a single, cohesive paragraph of English text.
-* **DO NOT** use bullet points, labels, or any explanations. Combine all chosen elements into one powerful prompt.
+**Step 4: Final Output Format (EXTREMELY STRICT).**
+* Your output **MUST** be in two parts, separated by `[NEGATIVE]`.
+
+**Example of a Perfect MULTI-CHARACTER Output:**
+masterpiece, best quality, official art, genshin impact, anime key visual, cinematic lighting, 2girls, nahida (genshin impact), long white hair, green eyes, elf-like ears, sitting on a picnic blanket in the foreground, smiling and holding a leaf, (wide shot:1.2)
+BREAK
+furina (genshin impact), long white hair with blue accents, heterochromia, standing gracefully in the background, dancing with a gentle expression, surrounded by glowing water droplets
+[NEGATIVE]
+(worst quality, low quality:1.4), blurry, ugly, jpeg artifacts, signature, watermark, text, username, error, dark hair, black hair, brown hair, blonde hair, yellow hair, horns, old, uniform eye color
 """
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 REFERENCE_AUDIO_PATH = os.path.join(BASE_DIR, "Ref_audio.mp3") 
@@ -80,21 +93,34 @@ def task_generate_image_and_prompt(user_message, nahida_reply, result_container)
         prompt_engineer_input = f"User: \"{user_message}\"\nNahida: \"{nahida_reply}\""
         messages_for_prompt = [{"role": "system", "content": PROMPT_ENGINEER_SYSTEM_PROMPT}, {"role": "user", "content": prompt_engineer_input}]
         
-        # 提示词工程师模型
         prompt_response = client.chat.completions.create(
-            model=PROMPT_ENGINEER_MODEL, 
-            messages=messages_for_prompt, 
-            max_tokens=200, 
-            temperature=0.5
-        )
-        image_prompt = prompt_response.choices[0].message.content.strip()
-        app.logger.info(f"🎨 Generated Image Prompt: {image_prompt}")
+            model=PROMPT_ENGINEER_MODEL, messages=messages_for_prompt, max_tokens=300, temperature=0.5)
+        
+        full_prompt_string = prompt_response.choices[0].message.content.strip()
 
-        if not image_prompt:
+        positive_prompt = full_prompt_string
+        negative_prompt = ""
+        if "[NEGATIVE]" in full_prompt_string:
+            parts = full_prompt_string.split("[NEGATIVE]", 1)
+            positive_prompt = parts[0].strip()
+            negative_prompt = parts[1].strip()
+
+        app.logger.info(f"🎨 Positive Prompt: {positive_prompt}")
+        app.logger.info(f"🚫 Negative Prompt: {negative_prompt}")
+
+        if not positive_prompt:
             result_container['image_url'] = None
             return
-            
-        image_response = client.images.generate(model=IMAGE_MODEL_NAME, prompt=image_prompt, n=1, extra_body={"image_size": "928x1664"})
+
+        image_response = client.images.generate(
+            model=IMAGE_MODEL_NAME, 
+            prompt=positive_prompt, 
+            n=1, 
+            extra_body={
+                "image_size": "928x1664",
+                "negative_prompt": negative_prompt
+            }
+        )
         result_container['image_url'] = image_response.data[0].url if image_response.data else None
     except Exception as e:
         app.logger.error(f"Error in image generation thread: {e}")
@@ -114,6 +140,22 @@ def task_generate_speech(nahida_reply, result_container):
         app.logger.error(f"Error in speech generation thread: {e}")
         result_container['audio_base64'] = None
 
+def sanitize_history_for_api(history):
+    sanitized_history = []
+    for message in history:
+        role = message.get('role')
+        content = message.get('content')
+        text_content = ""
+        
+        if role == 'user' and isinstance(content, str):
+            text_content = content
+        elif role == 'assistant' and isinstance(content, dict):
+            text_content = content.get('text', '')
+            
+        if text_content:
+            sanitized_history.append({'role': role, 'content': text_content})
+    return sanitized_history
+
 @app.route('/chat', methods=['POST'])
 def chat():
     data = request.json
@@ -122,14 +164,11 @@ def chat():
 
     def event_stream():
         try:
-            sanitized_history = [msg for msg in conversation_history if isinstance(msg.get('content'), str)]
+            sanitized_history = sanitize_history_for_api(conversation_history)
+            
             messages_for_nahida = [{"role": "system", "content": NAHIDA_SYSTEM_PROMPT}] + sanitized_history
             messages_for_nahida.append({"role": "user", "content": user_message})
             
-            app.logger.info("--- [DEBUG] Preparing to call CHAT model (Nahida) ---")
-            app.logger.info(f"Model: {CONVERSATIONAL_AGENT_MODEL}")
-            
-            # 对话代理模型
             chat_response = client.chat.completions.create(
                 model=CONVERSATIONAL_AGENT_MODEL, 
                 messages=messages_for_nahida, 
@@ -164,5 +203,5 @@ def chat():
 
 if __name__ == '__main__':
     app.logger.info("应用启动中...")
-    app.logger.info(f"请在浏览器中打开 http://127.0.0.1:1027") # 1027 is nahida's birthday~
+    app.logger.info(f"请在浏览器中打开 http://127.0.0.1:1027") # 10.27 is nahida's birthday~
     app.run(host='0.0.0.0', port=1027, debug=False)
