@@ -66,7 +66,7 @@
         .sidebar {
             width: 300px;
             height: 100%;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(20px);
             border-right: 1px solid rgba(255, 255, 255, 0.5);
             display: flex;
@@ -95,6 +95,38 @@
             gap: 8px;
         }
         .sidebar-title::before { content: "🌿"; font-size: 1.2em; }
+
+        /* 设置按钮 - 侧边栏顶部 */
+        .sidebar-settings-btn {
+            width: 100%;
+            background: linear-gradient(135deg, rgba(168, 224, 99, 0.2), rgba(86, 171, 47, 0.15));
+            border: 2px solid var(--nahida-green-light);
+            color: var(--nahida-green-dark);
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all var(--transition-fast);
+            margin-bottom: 12px;
+        }
+        .sidebar-settings-btn:hover {
+            background: linear-gradient(135deg, var(--nahida-green-light), var(--nahida-green-dark));
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(86, 171, 47, 0.3);
+        }
+        .sidebar-settings-btn.pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(168, 224, 99, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(168, 224, 99, 0); }
+        }
 
         .new-chat-btn {
             background: linear-gradient(135deg, var(--nahida-green-light), var(--nahida-green-dark));
@@ -200,22 +232,6 @@
         .sidebar-footer {
             padding: 16px;
             border-top: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .settings-btn {
-            width: 100%;
-            background: rgba(86, 171, 47, 0.1);
-            border: 1px solid rgba(86, 171, 47, 0.2);
-            color: var(--nahida-green-dark);
-            padding: 10px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all var(--transition-fast);
-            margin-bottom: 10px;
-        }
-        .settings-btn:hover {
-            background: rgba(86, 171, 47, 0.2);
         }
 
         .clear-history-btn {
@@ -538,7 +554,11 @@
         .welcome-icon {
             font-size: 4em;
             margin-bottom: 20px;
-            animation: float 3s ease-in-out infinite;
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
         .welcome-title {
             font-size: 1.8em;
@@ -549,8 +569,49 @@
         .welcome-subtitle {
             font-size: 1em;
             max-width: 400px;
-            margin: 0 auto;
+            margin: 0 auto 24px;
             line-height: 1.6;
+        }
+
+        /* 欢迎界面的快速开始按钮 */
+        .welcome-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+        .welcome-btn {
+            padding: 14px 28px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            border: none;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .welcome-btn-primary {
+            background: linear-gradient(135deg, var(--nahida-green-light), var(--nahida-green-dark));
+            color: white;
+            box-shadow: 0 4px 15px rgba(86, 171, 47, 0.3);
+            animation: pulse 2s infinite;
+        }
+        .welcome-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(86, 171, 47, 0.4);
+        }
+        .welcome-btn-secondary {
+            background: white;
+            color: var(--nahida-green-dark);
+            border: 2px solid var(--nahida-green-light);
+        }
+        .welcome-btn-secondary:hover {
+            background: rgba(168, 224, 99, 0.1);
         }
 
         /* 设置面板 */
@@ -673,6 +734,13 @@
             margin-top: 6px;
             line-height: 1.4;
         }
+        .form-hint a {
+            color: var(--nahida-green-dark);
+            text-decoration: none;
+        }
+        .form-hint a:hover {
+            text-decoration: underline;
+        }
 
         .settings-actions {
             display: flex;
@@ -756,20 +824,26 @@
 
     <div class="main-container">
         <!-- 侧边栏 -->
-        <div class="sidebar collapsed" id="sidebar">
+        <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-title">对话历史</div>
                 <button class="icon-button" id="sidebar-collapse-btn" title="收起">‹</button>
             </div>
+
+            <!-- 设置按钮放在侧边栏顶部 -->
+            <div style="padding: 12px 16px;">
+                <button class="sidebar-settings-btn" id="sidebar-settings-btn">
+                    <span>⚙️</span> 配置 API 和模型
+                </button>
+            </div>
+
             <div class="history-list" id="history-list"></div>
+            
             <div class="sidebar-footer">
                 <button class="new-chat-btn" id="new-chat-btn-sidebar">
                     <span>+</span> 新对话
                 </button>
-                <button class="settings-btn" id="settings-btn-sidebar">
-                    ⚙️ 设置
-                </button>
-                <button class="clear-history-btn" id="clear-history-btn">
+                <button class="clear-history-btn" id="clear-history-btn" style="margin-top: 10px;">
                     🗑️ 清空历史
                 </button>
             </div>
@@ -806,7 +880,15 @@
                             <div class="welcome-title">你好呀，旅行者~</div>
                             <div class="welcome-subtitle">
                                 我是纳西妲，须弥的小吉祥草王。<br>
-                                有什么想和我聊的吗？
+                                在开始我们的对话之前，请先配置 API 设置
+                            </div>
+                            <div class="welcome-actions">
+                                <button class="welcome-btn welcome-btn-primary" id="welcome-config-btn">
+                                    ⚙️ 配置 API 设置
+                                </button>
+                                <button class="welcome-btn welcome-btn-secondary" id="welcome-start-btn">
+                                    💬 直接开始对话
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -918,8 +1000,11 @@
             settingsCancel: document.getElementById('settings-cancel'),
             settingsSave: document.getElementById('settings-save'),
             settingsBtnHeader: document.getElementById('settings-btn-header'),
-            settingsBtnSidebar: document.getElementById('settings-btn-sidebar'),
+            sidebarSettingsBtn: document.getElementById('sidebar-settings-btn'),
             settingsStatus: document.getElementById('settings-status'),
+            // 欢迎界面按钮
+            welcomeConfigBtn: document.getElementById('welcome-config-btn'),
+            welcomeStartBtn: document.getElementById('welcome-start-btn'),
             // 设置表单
             settingApiKey: document.getElementById('setting-api-key'),
             settingChatModel: document.getElementById('setting-chat-model'),
@@ -1027,15 +1112,20 @@
             }
             
             renderHistoryList();
-            toggleSidebar(true);
             adjustTextareaHeight();
 
             // 检查是否需要显示设置
             if (!settings.apiKey) {
+                // 首次使用：展开侧边栏，高亮设置按钮，延迟弹出设置面板
+                toggleSidebar(false);
+                elements.sidebarSettingsBtn.classList.add('pulse');
                 setTimeout(() => {
                     openSettings();
-                    showSettingsStatus('请先配置 API Key 才能开始使用', 'warning');
-                }, 500);
+                    showSettingsStatus('请先配置 API Key 才能开始对话', 'warning');
+                }, 800);
+            } else {
+                // 已配置：收起侧边栏
+                toggleSidebar(true);
             }
         }
 
@@ -1061,8 +1151,11 @@
             elements.clearHistoryBtn.addEventListener('click', clearAllHistory);
             
             // 设置面板事件
+            elements.sidebarSettingsBtn.addEventListener('click', () => {
+                elements.sidebarSettingsBtn.classList.remove('pulse');
+                openSettings();
+            });
             elements.settingsBtnHeader.addEventListener('click', openSettings);
-            elements.settingsBtnSidebar.addEventListener('click', openSettings);
             elements.settingsClose.addEventListener('click', closeSettings);
             elements.settingsCancel.addEventListener('click', closeSettings);
             elements.settingsModal.addEventListener('click', (e) => {
@@ -1076,8 +1169,23 @@
                 }
                 settings = newSettings;
                 saveSettings();
+                elements.sidebarSettingsBtn.classList.remove('pulse');
                 showSettingsStatus('设置已保存！', 'success');
                 setTimeout(closeSettings, 800);
+            });
+
+            // 欢迎界面按钮
+            elements.welcomeConfigBtn.addEventListener('click', () => {
+                elements.sidebarSettingsBtn.classList.remove('pulse');
+                openSettings();
+            });
+            elements.welcomeStartBtn.addEventListener('click', () => {
+                if (!settings.apiKey) {
+                    openSettings();
+                    showSettingsStatus('请先配置 API Key', 'warning');
+                } else {
+                    toggleSidebar(true);
+                }
             });
             
             // 输入框自动调整高度
@@ -1110,6 +1218,7 @@
 
             // 检查 API Key
             if (!settings.apiKey) {
+                toggleSidebar(false);
                 openSettings();
                 showSettingsStatus('请先配置 API Key', 'warning');
                 return;
@@ -1414,16 +1523,42 @@
             state.sessions[newId] = [{ role: 'system', content: 'New Chat' }];
             state.activeSessionId = newId;
             
+            // 判断是否已配置 API Key
+            const isConfigured = settings.apiKey;
+            
             elements.messagesContainer.innerHTML = `
                 <div class="welcome-message">
                     <div class="welcome-icon">🌱</div>
                     <div class="welcome-title">你好呀，旅行者~</div>
                     <div class="welcome-subtitle">
-                        我是纳西妲，须弥的小吉祥草王。<br>
-                        有什么想和我聊的吗？
+                        ${isConfigured 
+                            ? '我是纳西妲，须弥的小吉祥草王。<br>有什么想和我聊的吗？' 
+                            : '我是纳西妲，须弥的小吉祥草王。<br>在开始我们的对话之前，请先配置 API 设置'}
                     </div>
+                    ${!isConfigured ? `
+                    <div class="welcome-actions">
+                        <button class="welcome-btn welcome-btn-primary" id="welcome-config-btn">
+                            ⚙️ 配置 API 设置
+                        </button>
+                        <button class="welcome-btn welcome-btn-secondary" id="welcome-start-btn">
+                            💬 直接开始对话
+                        </button>
+                    </div>
+                    ` : ''}
                 </div>
             `;
+            
+            // 重新绑定欢迎按钮事件
+            if (!isConfigured) {
+                document.getElementById('welcome-config-btn').addEventListener('click', () => {
+                    elements.sidebarSettingsBtn.classList.remove('pulse');
+                    openSettings();
+                });
+                document.getElementById('welcome-start-btn').addEventListener('click', () => {
+                    openSettings();
+                    showSettingsStatus('请先配置 API Key', 'warning');
+                });
+            }
             
             saveSessions();
             renderHistoryList();
@@ -1442,16 +1577,7 @@
             const messages = state.sessions[sessionId].slice(1);
             
             if (messages.length === 0) {
-                elements.messagesContainer.innerHTML = `
-                    <div class="welcome-message">
-                        <div class="welcome-icon">🌱</div>
-                        <div class="welcome-title">你好呀，旅行者~</div>
-                        <div class="welcome-subtitle">
-                            我是纳西妲，须弥的小吉祥草王。<br>
-                            有什么想和我聊的吗？
-                        </div>
-                    </div>
-                `;
+                startNewChat(false);
             } else {
                 messages.forEach(item => {
                     const content = typeof item.content === 'string' 
