@@ -3,299 +3,1381 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>是最最可爱的纳西妲呀~</title>
+    <title>与纳西妲的奇妙旅程 ✨</title>
     <style>
-        * { box-sizing: border-box; }
-        :root { --nahida-green-light: #a8e063; --nahida-green-dark: #56ab2f; --background-blur: 12px; --background-opacity: 0.9; }
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap');
-        body { font-family: 'Noto Sans SC', sans-serif; margin: 0; background-image: url('/static/nahi_background.png'); background-size: cover; background-position: center; background-attachment: fixed; overflow: hidden; }
-        .main-container { display: flex; width: 100vw; height: 100vh; }
-        .sidebar { width: 260px; height: 100%; background-color: rgba(240, 248, 240, 0.9); backdrop-filter: blur(var(--background-blur)); border-right: 1px solid rgba(0,0,0,0.1); display: flex; flex-direction: column; transition: transform 0.3s ease-in-out; transform: translateX(0); position: absolute; z-index: 100; }
-        .sidebar.collapsed { transform: translateX(-100%); }
-        .sidebar-header { padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.08); gap: 10px; }
-        .new-chat-btn { background: linear-gradient(135deg, var(--nahida-green-light), var(--nahida-green-dark)); color: white; border: none; padding: 8px 15px; border-radius: 20px; font-size: 0.9em; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; flex-grow: 1; justify-content: center; }
-        .sidebar-footer { padding: 10px; border-top: 1px solid rgba(0,0,0,0.08); }
-        .clear-history-btn { width: 100%; background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 8px; border-radius: 8px; cursor: pointer; }
-        .icon-button { background: none; border: none; font-size: 1.5em; cursor: pointer; color: #555; padding: 5px; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; }
-        .icon-button:hover { background-color: rgba(0,0,0,0.1); }
-        .history-list { flex-grow: 1; overflow-y: auto; padding: 10px; }
-        .history-item { padding: 12px 15px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: relative; }
-        .history-item:hover { background-color: rgba(0,0,0,0.05); }
-        .history-item.active { background-color: #d0e8d0; font-weight: bold; }
-        .delete-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; display: none; font-size: 1.2em; color: #888; }
-        .history-item:hover .delete-btn { display: block; }
-        .delete-btn:hover { color: red; }
-        .chat-wrapper { flex-grow: 1; height: 100vh; display: flex; justify-content: center; align-items: center; padding: 2vh 2vw; transition: margin-left 0.3s ease-in-out; }
-        .chat-container { width: 100%; height: 100%; background-color: rgba(255, 255, 255, var(--background-opacity)); backdrop-filter: blur(var(--background-blur)); border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; position: relative; }
-        .chat-header { background: linear-gradient(135deg, var(--nahida-green-light), var(--nahida-green-dark)); color: white; padding: 12px 15px; text-align: center; font-size: 1.4em; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
-        .header-button-main { background: none; border: none; color: white; cursor: pointer; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; border-radius: 50%; }
-        .header-button-main:hover { background-color: rgba(255,255,255,0.2); }
-        .header-button-main svg { width: 24px; height: 24px; }
-        .chat-box { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 25px; }
-        .message-wrapper { display: flex; align-items: flex-start; gap: 10px; max-width: 90%; }
-        .message-wrapper.user { align-self: flex-end; flex-direction: row-reverse; }
-        .message-wrapper.assistant { align-self: flex-start; flex-direction: row; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid var(--nahida-green-light); box-shadow: 0 0 5px rgba(0,0,0,0.1); }
-        .message-bubble { display: flex; flex-direction: column; align-items: flex-start; gap: 15px; }
-        .message-content { padding: 12px 18px; border-radius: 22px; line-height: 1.6; word-wrap: break-word; font-size: 1em; box-shadow: 0 2px 8px rgba(0,0,0,0.08); min-height: 1.6em; }
-        .message-wrapper.user .message-content { background-color: #007bff; color: white; border-bottom-right-radius: 8px; }
-        .message-wrapper.assistant .message-content { background-color: #e6ffe6; color: #333; border-bottom-left-radius: 8px; }
-        .message-image { max-width: 100%; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; transition: transform 0.3s ease, opacity 0.5s ease; opacity: 0; }
-        .message-image.loaded { opacity: 1; }
-        .image-placeholder { color: #888; font-style: italic; font-size: 0.9em; padding-top: 5px;} /* 新增：图片加载占位符 */
-        .chat-input { display: flex; border-top: 1px solid #eee; padding: 15px; background-color: rgba(255, 255, 255, 0.95); }
-        #message-input { flex-grow: 1; border: 1px solid #ccc; border-radius: 25px; padding: 12px 18px; font-size: 1.05em; outline: none; transition: border-color 0.3s, box-shadow 0.3s; box-shadow: inset 0 1px 3px rgba(0,0,0,0.06); }
-        #send-button { background: linear-gradient(45deg, var(--nahida-green-light), var(--nahida-green-dark)); color: white; border: none; border-radius: 50%; width: 50px; height: 50px; margin-left: 12px; cursor: pointer; transition: all 0.2s ease-out; display: flex; justify-content: center; align-items: center; box-shadow: 0 3px 10px rgba(0,0,0,0.1); flex-shrink: 0; }
-        #send-button.stop-mode { background: #6c757d; }
-        #send-button:disabled:not(.stop-mode) { background: #cccccc; cursor: not-allowed; }
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        :root {
+            --nahida-green-light: #a8e063;
+            --nahida-green-dark: #56ab2f;
+            --nahida-green-accent: #7dd321;
+            --nahida-cream: #f5f9f0;
+            --text-primary: #2c3e2d;
+            --text-secondary: #5a6c5b;
+            --shadow-soft: 0 4px 20px rgba(86, 171, 47, 0.15);
+            --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-medium: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 50%, #a5d6a7 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow: hidden;
+            color: var(--text-primary);
+        }
+
+        /* 动态背景粒子 */
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(168, 224, 99, 0.4);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* 主容器 */
+        .main-container {
+            display: flex;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            width: 300px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            transition: transform var(--transition-medium);
+            position: absolute;
+            z-index: 100;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--nahida-green-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-title::before {
+            content: "🌿";
+            font-size: 1.2em;
+        }
+
+        .new-chat-btn {
+            background: linear-gradient(135deg, var(--nahida-green-light), var(--nahida-green-dark));
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all var(--transition-fast);
+            box-shadow: 0 2px 8px rgba(86, 171, 47, 0.3);
+        }
+
+        .new-chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(86, 171, 47, 0.4);
+        }
+
+        .icon-button {
+            background: rgba(86, 171, 47, 0.1);
+            border: none;
+            font-size: 1.3em;
+            cursor: pointer;
+            color: var(--nahida-green-dark);
+            padding: 8px;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all var(--transition-fast);
+        }
+
+        .icon-button:hover {
+            background: rgba(86, 171, 47, 0.2);
+            transform: scale(1.1);
+        }
+
+        .history-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: rgba(86, 171, 47, 0.3);
+            border-radius: 3px;
+        }
+
+        .history-item {
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            position: relative;
+            transition: all var(--transition-fast);
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid transparent;
+        }
+
+        .history-item:hover {
+            background: rgba(168, 224, 99, 0.2);
+            border-color: rgba(86, 171, 47, 0.2);
+            transform: translateX(4px);
+        }
+
+        .history-item.active {
+            background: linear-gradient(135deg, rgba(168, 224, 99, 0.3), rgba(86, 171, 47, 0.2));
+            border-color: var(--nahida-green-light);
+            font-weight: 500;
+        }
+
+        .delete-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%) scale(0.8);
+            background: rgba(255, 107, 107, 0.9);
+            border: none;
+            cursor: pointer;
+            display: none;
+            font-size: 1em;
+            color: white;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all var(--transition-fast);
+        }
+
+        .history-item:hover .delete-btn {
+            display: flex;
+            opacity: 1;
+            transform: translateY(-50%) scale(1);
+        }
+
+        .delete-btn:hover {
+            background: #ff4444;
+            transform: translateY(-50%) scale(1.1) !important;
+        }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .clear-history-btn {
+            width: 100%;
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all var(--transition-fast);
+        }
+
+        .clear-history-btn:hover {
+            background: rgba(255, 107, 107, 0.2);
+        }
+
+        /* 聊天区域 */
+        .chat-wrapper {
+            flex-grow: 1;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: margin-left var(--transition-medium);
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 1000px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: var(--shadow-medium);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* 头部 */
+        .chat-header {
+            background: linear-gradient(135deg, var(--nahida-green-light), var(--nahida-green-dark));
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(86, 171, 47, 0.3);
+        }
+
+        .header-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title::before {
+            content: "🌱";
+            font-size: 1.4em;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            transition: all var(--transition-fast);
+        }
+
+        .header-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .header-button svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        /* 聊天框 */
+        .chat-box {
+            flex-grow: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-box::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-box::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-box::-webkit-scrollbar-thumb {
+            background: rgba(86, 171, 47, 0.3);
+            border-radius: 4px;
+        }
+
+        .chat-box::-webkit-scrollbar-thumb:hover {
+            background: rgba(86, 171, 47, 0.5);
+        }
+
+        .messages {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* 消息样式 */
+        .message-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            max-width: 85%;
+            animation: messageSlideIn 0.4s ease-out;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-wrapper.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-wrapper.assistant {
+            align-self: flex-start;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 3px solid white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform var(--transition-fast);
+        }
+
+        .avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .message-bubble {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 100%;
+        }
+
+        .message-content {
+            padding: 14px 20px;
+            border-radius: 20px;
+            line-height: 1.7;
+            word-wrap: break-word;
+            font-size: 0.95em;
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            transition: all var(--transition-fast);
+        }
+
+        .message-wrapper.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 6px;
+        }
+
+        .message-wrapper.assistant .message-content {
+            background: linear-gradient(135deg, var(--nahida-cream) 0%, #e8f5e9 100%);
+            color: var(--text-primary);
+            border: 1px solid rgba(86, 171, 47, 0.2);
+            border-bottom-left-radius: 6px;
+        }
+
+        /* 打字机光标 */
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: var(--nahida-green-dark);
+            margin-left: 4px;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* 图片样式 */
+        .message-image-container {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            transition: all var(--transition-medium);
+        }
+
+        .message-image-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .message-image {
+            max-width: 100%;
+            max-height: 400px;
+            display: block;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .message-image.loaded {
+            opacity: 1;
+        }
+
+        .image-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: var(--nahida-green-dark);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(86, 171, 47, 0.2);
+            border-top-color: var(--nahida-green-dark);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .image-placeholder {
+            background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+            border-radius: 16px;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        /* 输入区域 */
+        .chat-input-container {
+            padding: 20px 24px;
+            background: rgba(255, 255, 255, 0.8);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            background: white;
+            border-radius: 24px;
+            padding: 8px 8px 8px 20px;
+            box-shadow: var(--shadow-soft);
+            border: 2px solid transparent;
+            transition: all var(--transition-fast);
+        }
+
+        .chat-input:focus-within {
+            border-color: var(--nahida-green-light);
+            box-shadow: 0 4px 20px rgba(86, 171, 47, 0.2);
+        }
+
+        #message-input {
+            flex-grow: 1;
+            border: none;
+            background: transparent;
+            padding: 12px 0;
+            font-size: 1em;
+            outline: none;
+            color: var(--text-primary);
+            resize: none;
+            max-height: 120px;
+            font-family: inherit;
+        }
+
+        #message-input::placeholder {
+            color: #aaa;
+        }
+
+        #send-button {
+            background: linear-gradient(135deg, var(--nahida-green-light), var(--nahida-green-dark));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(86, 171, 47, 0.3);
+        }
+
+        #send-button:hover:not(:disabled) {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(86, 171, 47, 0.4);
+        }
+
+        #send-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        #send-button.stop-mode {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+        }
+
+        #send-button svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* 欢迎消息 */
+        .welcome-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .welcome-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .welcome-title {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: var(--nahida-green-dark);
+            margin-bottom: 12px;
+        }
+
+        .welcome-subtitle {
+            font-size: 1em;
+            max-width: 400px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 85%;
+                max-width: 300px;
+            }
+
+            .chat-wrapper {
+                padding: 10px;
+            }
+
+            .chat-container {
+                border-radius: 16px;
+            }
+
+            .message-wrapper {
+                max-width: 95%;
+            }
+
+            .header-title {
+                font-size: 1.1em;
+            }
+
+            .welcome-message {
+                padding: 40px 16px;
+            }
+
+            .welcome-icon {
+                font-size: 3em;
+            }
+
+            .welcome-title {
+                font-size: 1.4em;
+            }
+        }
+
+        /* 空状态提示 */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 0.95em;
+        }
     </style>
 </head>
 <body>
+    <!-- 背景粒子 -->
+    <div class="bg-particles" id="bg-particles"></div>
+
     <div class="main-container">
+        <!-- 侧边栏 -->
         <div class="sidebar collapsed" id="sidebar">
             <div class="sidebar-header">
-                <button class="new-chat-btn" id="new-chat-btn-sidebar">➕ 新对话</button>
-                <button class="icon-button" id="sidebar-collapse-btn" title="收起侧边栏">‹</button>
+                <div class="sidebar-title">对话历史</div>
+                <button class="icon-button" id="sidebar-collapse-btn" title="收起">‹</button>
             </div>
             <div class="history-list" id="history-list"></div>
             <div class="sidebar-footer">
-                <button class="clear-history-btn" id="clear-history-btn">清空所有历史</button>
+                <button class="new-chat-btn" id="new-chat-btn-sidebar">
+                    <span>+</span> 新对话
+                </button>
+                <button class="clear-history-btn" id="clear-history-btn" style="margin-top: 10px;">
+                    🗑️ 清空历史
+                </button>
             </div>
         </div>
 
+        <!-- 聊天区域 -->
         <div class="chat-wrapper" id="chat-wrapper">
             <div class="chat-container">
                 <div class="chat-header">
-                    <button class="header-button-main" id="sidebar-toggle-btn" title="历史会话">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+                    <button class="header-button" id="sidebar-toggle-btn" title="历史会话">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                        </svg>
                     </button>
-                    <span>是最最可爱的纳西妲呀~</span>
-                    <button class="header-button-main" id="new-chat-btn-header" title="新对话">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
+                    <div class="header-title">与纳西妲的奇妙旅程</div>
+                    <button class="header-button" id="new-chat-btn-header" title="新对话">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
                     </button>
                 </div>
+
                 <div class="chat-box" id="chat-box">
-                    <div class="messages" id="messages"></div>
+                    <div class="messages" id="messages">
+                        <!-- 欢迎消息 -->
+                        <div class="welcome-message">
+                            <div class="welcome-icon">🌱</div>
+                            <div class="welcome-title">你好呀，旅行者~</div>
+                            <div class="welcome-subtitle">
+                                我是纳西妲，须弥的小吉祥草王。<br>
+                                有什么想和我聊的吗？
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <form class="chat-input" id="chat-form">
-                    <input type="text" id="message-input" placeholder="输入消息..." autocomplete="off" required>
-                    <button id="send-button" type="submit"></button>
-                </form>
+
+                <div class="chat-input-container">
+                    <form class="chat-input" id="chat-form">
+                        <textarea 
+                            id="message-input" 
+                            placeholder="输入消息... (Shift+Enter 换行)" 
+                            rows="1"
+                            autocomplete="off"
+                        ></textarea>
+                        <button id="send-button" type="submit">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        const chatForm = document.getElementById('chat-form');
-        const messageInput = document.getElementById('message-input');
-        const messagesContainer = document.getElementById('messages');
-        const chatBox = document.getElementById('chat-box');
-        const sendButton = document.getElementById('send-button');
-        const newChatBtnHeader = document.getElementById('new-chat-btn-header');
-        const newChatBtnSidebar = document.getElementById('new-chat-btn-sidebar');
-        const historyList = document.getElementById('history-list');
-        const sidebar = document.getElementById('sidebar');
-        const chatWrapper = document.getElementById('chat-wrapper');
-        const sidebarCollapseBtn = document.getElementById('sidebar-collapse-btn');
-        const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
-        const clearHistoryBtn = document.getElementById('clear-history-btn');
-        
-        const sendIconSVG = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>`;
-        const stopIconSVG = `<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12"></rect></svg>`;
-
-        let sessions = {};
-        let activeSessionId = null;
-        let currentAudio = null;
-        let typewriterInterval = null;
-        let abortController = null;
-
-        window.onload = () => {
-            sendButton.innerHTML = sendIconSVG;
-            loadSessions();
-            if (!activeSessionId || !sessions[activeSessionId]) {
-                startNewChat(false);
-            } else {
-                loadSession(activeSessionId);
-            }
-            renderHistoryList();
-            toggleSidebar(true);
+        // ==================== DOM 元素 ====================
+        const elements = {
+            chatForm: document.getElementById('chat-form'),
+            messageInput: document.getElementById('message-input'),
+            messagesContainer: document.getElementById('messages'),
+            chatBox: document.getElementById('chat-box'),
+            sendButton: document.getElementById('send-button'),
+            newChatBtnHeader: document.getElementById('new-chat-btn-header'),
+            newChatBtnSidebar: document.getElementById('new-chat-btn-sidebar'),
+            historyList: document.getElementById('history-list'),
+            sidebar: document.getElementById('sidebar'),
+            chatWrapper: document.getElementById('chat-wrapper'),
+            sidebarCollapseBtn: document.getElementById('sidebar-collapse-btn'),
+            sidebarToggleBtn: document.getElementById('sidebar-toggle-btn'),
+            clearHistoryBtn: document.getElementById('clear-history-btn'),
+            bgParticles: document.getElementById('bg-particles'),
         };
 
-        chatForm.addEventListener('submit', handleSendMessage);
-        newChatBtnHeader.addEventListener('click', () => startNewChat(true));
-        newChatBtnSidebar.addEventListener('click', () => startNewChat(true));
-        sidebarCollapseBtn.addEventListener('click', () => toggleSidebar(true));
-        sidebarToggleBtn.addEventListener('click', () => toggleSidebar(false));
-        clearHistoryBtn.addEventListener('click', clearAllHistory);
+        // ==================== 图标 SVG ====================
+        const icons = {
+            send: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>`,
+            stop: `<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12"/></svg>`,
+        };
 
+        // ==================== 状态管理 ====================
+        const state = {
+            sessions: {},
+            activeSessionId: null,
+            currentAudio: null,
+            typewriterInterval: null,
+            abortController: null,
+            isGenerating: false,
+        };
+
+        // ==================== 初始化 ====================
+        function init() {
+            createBackgroundParticles();
+            loadSessions();
+            setupEventListeners();
+            
+            if (!state.activeSessionId || !state.sessions[state.activeSessionId]) {
+                startNewChat(false);
+            } else {
+                loadSession(state.activeSessionId);
+            }
+            
+            renderHistoryList();
+            toggleSidebar(true);
+            adjustTextareaHeight();
+        }
+
+        // 创建背景粒子
+        function createBackgroundParticles() {
+            const particleCount = 20;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+                elements.bgParticles.appendChild(particle);
+            }
+        }
+
+        // ==================== 事件监听 ====================
+        function setupEventListeners() {
+            elements.chatForm.addEventListener('submit', handleSendMessage);
+            elements.newChatBtnHeader.addEventListener('click', () => startNewChat(true));
+            elements.newChatBtnSidebar.addEventListener('click', () => startNewChat(true));
+            elements.sidebarCollapseBtn.addEventListener('click', () => toggleSidebar(true));
+            elements.sidebarToggleBtn.addEventListener('click', () => toggleSidebar(false));
+            elements.clearHistoryBtn.addEventListener('click', clearAllHistory);
+            
+            // 输入框自动调整高度
+            elements.messageInput.addEventListener('input', adjustTextareaHeight);
+            elements.messageInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    elements.chatForm.dispatchEvent(new Event('submit'));
+                }
+            });
+        }
+
+        function adjustTextareaHeight() {
+            const textarea = elements.messageInput;
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+
+        // ==================== 消息处理 ====================
         async function handleSendMessage(e) {
             e.preventDefault();
-            if (sendButton.classList.contains('stop-mode')) {
+            
+            if (state.isGenerating) {
                 stopGeneration();
                 return;
             }
-            const messageText = messageInput.value.trim();
-            if (!messageText || sendButton.disabled) return;
-            
-            messageInput.value = '';
-            stopCurrentAudio();
-            updateHistoryAndUI(messageText, 'user');
-            const assistantMessageWrapper = addMessage({ text: "..." }, 'assistant');
-            
-            enableInput(false);
-            setSendButtonMode('stop');
 
-            abortController = new AbortController();
+            const messageText = elements.messageInput.value.trim();
+            if (!messageText) return;
+
+            // 清空输入框并调整高度
+            elements.messageInput.value = '';
+            adjustTextareaHeight();
+            
+            // 隐藏欢迎消息
+            const welcomeMessage = document.querySelector('.welcome-message');
+            if (welcomeMessage) {
+                welcomeMessage.style.display = 'none';
+            }
+
+            // 停止当前音频
+            stopCurrentAudio();
+            
+            // 添加用户消息
+            addMessage({ text: messageText }, 'user');
+            updateHistory(messageText, 'user');
+            
+            // 创建 AI 消息占位
+            const assistantWrapper = addMessage({ text: '' }, 'assistant');
+            const contentElement = assistantWrapper.querySelector('.message-content');
+            
+            // 添加打字光标
+            const cursor = document.createElement('span');
+            cursor.className = 'typing-cursor';
+            contentElement.appendChild(cursor);
+            
+            // 设置状态
+            setGeneratingState(true);
+            
+            // 创建中止控制器
+            state.abortController = new AbortController();
+            
             try {
                 const response = await fetch('/chat', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         message: messageText,
-                        history: sessions[activeSessionId] ? sessions[activeSessionId].slice(1) : []
+                        history: getSessionHistory(),
                     }),
-                    signal: abortController.signal
+                    signal: state.abortController.signal,
                 });
-                await processStreamResponse(response, assistantMessageWrapper);
+
+                await processStreamResponse(response, assistantWrapper, contentElement, cursor);
             } catch (error) {
-                 if (error.name === 'AbortError') {
-                     updateAssistantMessage(assistantMessageWrapper.querySelector('.message-content'), '[对话已中断]');
-                 } else {
-                     console.error('Connection failed:', error);
-                     updateAssistantMessage(assistantMessageWrapper.querySelector('.message-content'), `连接错误: ${error.message}`);
-                 }
-                 enableInput(true);
-                 setSendButtonMode('send');
+                handleError(error, contentElement, cursor);
             }
         }
-        
-        async function processStreamResponse(response, wrapper) {
+
+        async function processStreamResponse(response, wrapper, contentElement, cursor) {
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let buffer = '';
-        
-            // 使用两个变量来独立管理音频和图片的状态
             let receivedImageURL = null;
             let isAudioFinished = false;
+            let fullResponse = '';
 
-            // 创建一个函数，用于在条件满足时显示图片
             const showImageWhenReady = () => {
                 if (receivedImageURL && isAudioFinished) {
-                    appendImageToBubble(wrapper.querySelector('.message-bubble'), receivedImageURL);
-                    receivedImageURL = null; // 显示后重置
+                    appendImage(wrapper.querySelector('.message-bubble'), receivedImageURL);
                 }
             };
 
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
-                
+
                 buffer += decoder.decode(value, { stream: true });
                 let boundary = buffer.indexOf('\n\n');
 
                 while (boundary !== -1) {
                     const message = buffer.substring(0, boundary);
                     buffer = buffer.substring(boundary + 2);
+
                     if (message.startsWith('data: ')) {
                         try {
                             const data = JSON.parse(message.substring(6));
-                            handleServerEvent(data, wrapper, {
-                                // 将状态变量和检查函数传递下去
-                                onAudioEnd: () => { 
+                            handleServerEvent(data, {
+                                wrapper,
+                                contentElement,
+                                cursor,
+                                onAudioEnd: () => {
                                     isAudioFinished = true;
-                                    showImageWhenReady(); // 音频结束时，尝试显示图片
+                                    showImageWhenReady();
                                 },
                                 onImageReceived: (url) => {
                                     receivedImageURL = url;
-                                    showImageWhenReady(); // 收到图片时，尝试显示图片
-                                }
+                                    showImageWhenReady();
+                                },
+                                onFullResponse: (text) => { fullResponse = text; },
                             });
-                        } catch (e) { console.error("Failed to parse SSE data chunk: ", message); }
+                        } catch (e) {
+                            console.error('解析 SSE 数据失败:', e);
+                        }
                     }
                     boundary = buffer.indexOf('\n\n');
                 }
             }
+
+            // 完成处理
+            if (fullResponse) {
+                finalizeMessage(fullResponse, wrapper);
+            }
+            
+            setGeneratingState(false);
         }
 
-        function handleServerEvent(data, wrapper, callbacks) {
-            const { onAudioEnd, onImageReceived } = callbacks;
+        function handleServerEvent(data, callbacks) {
+            const { contentElement, cursor, onAudioEnd, onImageReceived, onFullResponse } = callbacks;
 
             switch (data.type) {
                 case 'content_start':
-                    const bubble = wrapper.querySelector('.message-bubble');
-                    // 添加图片加载占位符
-                    const placeholder = document.createElement('div');
-                    placeholder.className = 'image-placeholder';
-                    placeholder.textContent = '正在描绘图片...';
-                    bubble.appendChild(placeholder);
-
+                    cursor.remove();
+                    
                     if (data.audio) {
-                        currentAudio = new Audio(`data:audio/mp3;base64,${data.audio}`);
-                        currentAudio.onloadedmetadata = () => {
-                            typewriter(wrapper.querySelector('.message-content'), data.text, currentAudio.duration * 1000);
-                        };
-                        currentAudio.onended = onAudioEnd;
-                        currentAudio.play().catch(e => console.error("Audio playback failed:", e));
+                        playAudio(data.audio, data.text, contentElement, onAudioEnd);
                     } else {
-                        updateAssistantMessage(wrapper.querySelector('.message-content'), data.text);
-                        onAudioEnd(); // 没有音频，直接触发结束事件
+                        typewriterEffect(contentElement, data.text, 30);
+                        onAudioEnd();
                     }
                     break;
+
                 case 'image':
-                    onImageReceived(data.payload); // 收到图片，通知处理器
+                    onImageReceived(data.payload);
                     break;
+
                 case 'done':
-                    const finalImageUrl = wrapper.querySelector('.message-image')?.src || null;
-                    const assistantReply = {
-                        text: data.full_response,
-                        image_url: finalImageUrl
-                    };
-                    sessions[activeSessionId].push({ role: 'assistant', content: assistantReply });
-                    saveSessions();
-                    renderHistoryList();
-                    enableInput(true);
-                    setSendButtonMode('send');
+                    onFullResponse(data.full_response);
                     break;
+
                 case 'error':
-                    updateAssistantMessage(wrapper.querySelector('.message-content'), `Server Error: ${data.content}`);
-                    enableInput(true);
-                    setSendButtonMode('send');
+                    cursor.remove();
+                    contentElement.textContent = `❌ 错误: ${data.content}`;
+                    setGeneratingState(false);
                     break;
             }
         }
-        
-        function appendImageToBubble(bubble, imageUrl) {
-            // 移除图片加载占位符
-            const placeholder = bubble.querySelector('.image-placeholder');
-            if(placeholder) placeholder.remove();
 
-            const image = document.createElement('img');
-            image.src = imageUrl;
-            image.alt = "Generated Image";
-            image.className = 'message-image';
-            image.onload = () => { 
-                image.classList.add('loaded');
-                chatBox.scrollTop = chatBox.scrollHeight; 
-            };
-            bubble.appendChild(image);
+        function handleError(error, contentElement, cursor) {
+            cursor.remove();
+            
+            if (error.name === 'AbortError') {
+                contentElement.textContent = '[对话已中断]';
+            } else {
+                console.error('请求失败:', error);
+                contentElement.textContent = `❌ 连接错误: ${error.message}`;
+            }
+            
+            setGeneratingState(false);
         }
 
-        function stopGeneration() { if (abortController) { abortController.abort(); } stopCurrentAudio(); }
-        function setSendButtonMode(mode) { if (mode === 'stop') { sendButton.innerHTML = stopIconSVG; sendButton.classList.add('stop-mode'); } else { sendButton.innerHTML = sendIconSVG; sendButton.classList.remove('stop-mode'); } }
-        function typewriter(element, text, duration) { element.textContent = ""; let i = 0; const textLength = text.length; let speed = Math.max(30, Math.min(150, duration / textLength)); typewriterInterval = setInterval(() => { if (i < textLength) { element.textContent += text.charAt(i++); chatBox.scrollTop = chatBox.scrollHeight; } else { clearInterval(typewriterInterval); typewriterInterval = null; } }, speed); }
-        function stopCurrentAudio() { if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio = null; } if(typewriterInterval) { clearInterval(typewriterInterval); typewriterInterval = null; } }
-        function startNewChat(collapseSidebar = false) { stopGeneration(); const newId = Date.now().toString(); sessions[newId] = [{"role": "system", "content": "New Chat"}]; activeSessionId = newId; messagesContainer.innerHTML = ''; saveSessions(); renderHistoryList(); enableInput(true); setSendButtonMode('send'); if (collapseSidebar) { toggleSidebar(true); } }
-        function loadSession(sessionId) { if (!sessions[sessionId] || activeSessionId === sessionId) return; stopGeneration(); activeSessionId = sessionId; messagesContainer.innerHTML = ''; sessions[sessionId].slice(1).forEach(item => { const contentData = (typeof item.content === 'string') ? { text: item.content } : item.content; addMessage(contentData, item.role); }); saveSessions(); renderHistoryList(); chatBox.scrollTop = chatBox.scrollHeight; }
-        function deleteSession(sessionId, event) { event.stopPropagation(); if (confirm("确定要删除这个会话吗？")) { delete sessions[sessionId]; if (activeSessionId === sessionId) { startNewChat(false); } else { saveSessions(); renderHistoryList(); } } }
-        function clearAllHistory() { if (confirm("确定要清空所有历史记录吗？此操作不可撤销。")) { sessions = {}; localStorage.removeItem('nahidaChatSessions'); startNewChat(false); } }
-        function renderHistoryList() { historyList.innerHTML = ''; Object.keys(sessions).sort().reverse().forEach(id => { const item = document.createElement('div'); item.className = 'history-item'; item.dataset.id = id; if (id === activeSessionId) item.classList.add('active'); const firstUserMessage = sessions[id].find(m => m.role === 'user'); item.textContent = firstUserMessage ? (typeof firstUserMessage.content === 'string' ? firstUserMessage.content : firstUserMessage.content.text) : '新的对话'; const deleteBtn = document.createElement('button'); deleteBtn.className = 'delete-btn'; deleteBtn.innerHTML = '×'; deleteBtn.onclick = (event) => deleteSession(id, event); item.appendChild(deleteBtn); item.onclick = () => loadSession(id); historyList.appendChild(item); }); }
-        function enableInput(isEnabled) { sendButton.disabled = !isEnabled; messageInput.disabled = !isEnabled; if (isEnabled) messageInput.focus(); }
-        function updateHistoryAndUI(text, role) { const content = { text }; sessions[activeSessionId].push({ role, content }); addMessage(content, role); saveSessions(); }
-        function loadSessions() { const data = localStorage.getItem('nahidaChatSessions'); if (data) { const parsedData = JSON.parse(data); sessions = parsedData.sessions || {}; activeSessionId = parsedData.activeSessionId; } }
-        function saveSessions() { const data = { sessions: sessions, activeSessionId: activeSessionId }; localStorage.setItem('nahidaChatSessions', JSON.stringify(data)); }
-        function addMessage(data, role) { const wrapper = document.createElement('div'); wrapper.classList.add('message-wrapper', role); const avatar = document.createElement('img'); avatar.classList.add('avatar'); avatar.src = (role === 'user') ? '/static/user_icon.png' : '/static/nahi_icon.jpeg'; const bubble = document.createElement('div'); bubble.classList.add('message-bubble'); const content = document.createElement('div'); content.classList.add('message-content'); content.textContent = data.text; bubble.appendChild(content); if (data.image_url) { appendImageToBubble(bubble, data.image_url); } wrapper.appendChild(avatar); wrapper.appendChild(bubble); messagesContainer.appendChild(wrapper); chatBox.scrollTop = chatBox.scrollHeight; return wrapper; }
-        function updateAssistantMessage(element, text) { element.textContent = text; chatBox.scrollTop = chatBox.scrollHeight; }
-        function toggleSidebar(collapse) { sidebar.classList.toggle('collapsed', collapse); chatWrapper.style.marginLeft = collapse ? '0' : '260px'; }
+        // ==================== 音频处理 ====================
+        function playAudio(base64Audio, text, contentElement, onEnded) {
+            state.currentAudio = new Audio(`data:audio/mp3;base64,${base64Audio}`);
+            
+            state.currentAudio.onloadedmetadata = () => {
+                const duration = state.currentAudio.duration * 1000;
+                typewriterEffect(contentElement, text, Math.max(30, duration / text.length));
+            };
+            
+            state.currentAudio.onended = onEnded;
+            state.currentAudio.onerror = () => {
+                console.error('音频播放失败');
+                typewriterEffect(contentElement, text, 30);
+                onEnded();
+            };
+            
+            state.currentAudio.play().catch(e => {
+                console.error('音频播放失败:', e);
+                typewriterEffect(contentElement, text, 30);
+                onEnded();
+            });
+        }
+
+        function stopCurrentAudio() {
+            if (state.currentAudio) {
+                state.currentAudio.pause();
+                state.currentAudio.currentTime = 0;
+                state.currentAudio = null;
+            }
+            if (state.typewriterInterval) {
+                clearInterval(state.typewriterInterval);
+                state.typewriterInterval = null;
+            }
+        }
+
+        // ==================== 打字机效果 ====================
+        function typewriterEffect(element, text, speed) {
+            let i = 0;
+            element.textContent = '';
+            
+            state.typewriterInterval = setInterval(() => {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    scrollToBottom();
+                } else {
+                    clearInterval(state.typewriterInterval);
+                    state.typewriterInterval = null;
+                }
+            }, speed);
+        }
+
+        // ==================== 图片处理 ====================
+        function appendImage(bubble, imageUrl) {
+            // 移除已存在的图片加载占位符
+            const existingPlaceholder = bubble.querySelector('.image-placeholder');
+            if (existingPlaceholder) {
+                existingPlaceholder.remove();
+            }
+
+            const container = document.createElement('div');
+            container.className = 'message-image-container';
+            
+            // 加载动画
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'image-loading';
+            loadingDiv.innerHTML = `
+                <div class="loading-spinner"></div>
+                <span>正在描绘画面...</span>
+            `;
+            container.appendChild(loadingDiv);
+            
+            const image = document.createElement('img');
+            image.className = 'message-image';
+            image.alt = '生成的画面';
+            image.src = imageUrl;
+            
+            image.onload = () => {
+                loadingDiv.remove();
+                image.classList.add('loaded');
+                scrollToBottom();
+            };
+            
+            image.onerror = () => {
+                loadingDiv.innerHTML = '<span>❌ 图片加载失败</span>';
+            };
+            
+            container.appendChild(image);
+            bubble.appendChild(container);
+            scrollToBottom();
+        }
+
+        function createImagePlaceholder() {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'image-placeholder';
+            placeholder.innerHTML = `
+                <div class="loading-spinner"></div>
+                <span>正在描绘画面...</span>
+            `;
+            return placeholder;
+        }
+
+        // ==================== 消息管理 ====================
+        function addMessage(data, role) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `message-wrapper ${role}`;
+            
+            const avatar = document.createElement('img');
+            avatar.className = 'avatar';
+            avatar.src = role === 'user' ? '/static/user_icon.png' : '/static/nahi_icon.jpeg';
+            avatar.alt = role === 'user' ? '用户' : '纳西妲';
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            content.textContent = data.text;
+            
+            bubble.appendChild(content);
+            
+            // 添加图片占位符（AI 消息）
+            if (role === 'assistant' && !data.image_url) {
+                bubble.appendChild(createImagePlaceholder());
+            }
+            
+            // 恢复已有图片
+            if (data.image_url) {
+                appendImage(bubble, data.image_url);
+            }
+            
+            wrapper.appendChild(avatar);
+            wrapper.appendChild(bubble);
+            elements.messagesContainer.appendChild(wrapper);
+            
+            scrollToBottom();
+            return wrapper;
+        }
+
+        function finalizeMessage(fullResponse, wrapper) {
+            const imageUrl = wrapper.querySelector('.message-image')?.src || null;
+            
+            state.sessions[state.activeSessionId].push({
+                role: 'assistant',
+                content: { text: fullResponse, image_url: imageUrl },
+            });
+            
+            saveSessions();
+            renderHistoryList();
+        }
+
+        // ==================== 会话管理 ====================
+        function startNewChat(collapseSidebar = false) {
+            stopGeneration();
+            
+            const newId = Date.now().toString();
+            state.sessions[newId] = [{ role: 'system', content: 'New Chat' }];
+            state.activeSessionId = newId;
+            
+            // 显示欢迎消息
+            elements.messagesContainer.innerHTML = `
+                <div class="welcome-message">
+                    <div class="welcome-icon">🌱</div>
+                    <div class="welcome-title">你好呀，旅行者~</div>
+                    <div class="welcome-subtitle">
+                        我是纳西妲，须弥的小吉祥草王。<br>
+                        有什么想和我聊的吗？
+                    </div>
+                </div>
+            `;
+            
+            saveSessions();
+            renderHistoryList();
+            enableInput(true);
+            
+            if (collapseSidebar) {
+                toggleSidebar(true);
+            }
+        }
+
+        function loadSession(sessionId) {
+            if (!state.sessions[sessionId] || state.activeSessionId === sessionId) return;
+            
+            stopGeneration();
+            state.activeSessionId = sessionId;
+            
+            elements.messagesContainer.innerHTML = '';
+            const messages = state.sessions[sessionId].slice(1);
+            
+            if (messages.length === 0) {
+                // 显示欢迎消息
+                elements.messagesContainer.innerHTML = `
+                    <div class="welcome-message">
+                        <div class="welcome-icon">🌱</div>
+                        <div class="welcome-title">你好呀，旅行者~</div>
+                        <div class="welcome-subtitle">
+                            我是纳西妲，须弥的小吉祥草王。<br>
+                            有什么想和我聊的吗？
+                        </div>
+                    </div>
+                `;
+            } else {
+                messages.forEach(item => {
+                    const content = typeof item.content === 'string' 
+                        ? { text: item.content } 
+                        : item.content;
+                    addMessage(content, item.role);
+                });
+            }
+            
+            saveSessions();
+            renderHistoryList();
+            scrollToBottom();
+        }
+
+        function deleteSession(sessionId, event) {
+            event.stopPropagation();
+            
+            if (!confirm('确定要删除这个会话吗？')) return;
+            
+            delete state.sessions[sessionId];
+            
+            if (state.activeSessionId === sessionId) {
+                startNewChat(false);
+            } else {
+                saveSessions();
+                renderHistoryList();
+            }
+        }
+
+        function clearAllHistory() {
+            if (!confirm('确定要清空所有历史记录吗？此操作不可撤销。')) return;
+            
+            state.sessions = {};
+            localStorage.removeItem('nahidaChatSessions');
+            startNewChat(false);
+        }
+
+        function getSessionHistory() {
+            return state.sessions[state.activeSessionId]?.slice(1) || [];
+        }
+
+        function updateHistory(text, role) {
+            const content = { text };
+            state.sessions[state.activeSessionId].push({ role, content });
+            saveSessions();
+            renderHistoryList();
+        }
+
+        // ==================== UI 控制 ====================
+        function setGeneratingState(isGenerating) {
+            state.isGenerating = isGenerating;
+            
+            if (isGenerating) {
+                elements.sendButton.innerHTML = icons.stop;
+                elements.sendButton.classList.add('stop-mode');
+                elements.sendButton.title = '停止生成';
+            } else {
+                elements.sendButton.innerHTML = icons.send;
+                elements.sendButton.classList.remove('stop-mode');
+                elements.sendButton.title = '发送消息';
+            }
+            
+            enableInput(!isGenerating);
+        }
+
+        function enableInput(isEnabled) {
+            elements.sendButton.disabled = !isEnabled && !state.isGenerating;
+            elements.messageInput.disabled = !isEnabled;
+            
+            if (isEnabled) {
+                elements.messageInput.focus();
+            }
+        }
+
+        function toggleSidebar(collapse) {
+            elements.sidebar.classList.toggle('collapsed', collapse);
+            elements.chatWrapper.style.marginLeft = collapse ? '0' : '300px';
+        }
+
+        function scrollToBottom() {
+            elements.chatBox.scrollTop = elements.chatBox.scrollHeight;
+        }
+
+        function renderHistoryList() {
+            elements.historyList.innerHTML = '';
+            
+            Object.keys(state.sessions)
+                .sort((a, b) => parseInt(b) - parseInt(a))
+                .forEach(id => {
+                    const session = state.sessions[id];
+                    const firstUserMessage = session.find(m => m.role === 'user');
+                    const title = firstUserMessage 
+                        ? (typeof firstUserMessage.content === 'string' 
+                            ? firstUserMessage.content 
+                            : firstUserMessage.content.text)
+                        : '新的对话';
+                    
+                    const item = document.createElement('div');
+                    item.className = 'history-item';
+                    item.dataset.id = id;
+                    
+                    if (id === state.activeSessionId) {
+                        item.classList.add('active');
+                    }
+                    
+                    item.textContent = title.substring(0, 20) + (title.length > 20 ? '...' : '');
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-btn';
+                    deleteBtn.innerHTML = '×';
+                    deleteBtn.onclick = (e) => deleteSession(id, e);
+                    
+                    item.appendChild(deleteBtn);
+                    item.onclick = () => loadSession(id);
+                    
+                    elements.historyList.appendChild(item);
+                });
+        }
+
+        // ==================== 存储管理 ====================
+        function loadSessions() {
+            try {
+                const data = localStorage.getItem('nahidaChatSessions');
+                if (data) {
+                    const parsed = JSON.parse(data);
+                    state.sessions = parsed.sessions || {};
+                    state.activeSessionId = parsed.activeSessionId;
+                }
+            } catch (e) {
+                console.error('加载会话失败:', e);
+                state.sessions = {};
+                state.activeSessionId = null;
+            }
+        }
+
+        function saveSessions() {
+            try {
+                const data = {
+                    sessions: state.sessions,
+                    activeSessionId: state.activeSessionId,
+                };
+                localStorage.setItem('nahidaChatSessions', JSON.stringify(data));
+            } catch (e) {
+                console.error('保存会话失败:', e);
+            }
+        }
+
+        function stopGeneration() {
+            if (state.abortController) {
+                state.abortController.abort();
+                state.abortController = null;
+            }
+            stopCurrentAudio();
+            setGeneratingState(false);
+        }
+
+        // ==================== 启动 ====================
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
