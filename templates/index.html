@@ -18,14 +18,9 @@
             --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.12);
             --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             --transition-medium: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -36,27 +31,22 @@
             color: var(--text-primary);
         }
 
-        /* 动态背景粒子 */
+        /* 背景粒子 */
         .bg-particles {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             pointer-events: none;
             overflow: hidden;
             z-index: 0;
         }
-
         .particle {
             position: absolute;
-            width: 6px;
-            height: 6px;
+            width: 6px; height: 6px;
             background: rgba(168, 224, 99, 0.4);
             border-radius: 50%;
             animation: float 15s infinite ease-in-out;
         }
-
         @keyframes float {
             0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
             10% { opacity: 1; }
@@ -86,10 +76,7 @@
             z-index: 100;
             box-shadow: var(--shadow-medium);
         }
-
-        .sidebar.collapsed {
-            transform: translateX(-100%);
-        }
+        .sidebar.collapsed { transform: translateX(-100%); }
 
         .sidebar-header {
             padding: 20px;
@@ -99,7 +86,6 @@
             align-items: center;
             gap: 12px;
         }
-
         .sidebar-title {
             font-size: 1.1em;
             font-weight: 600;
@@ -108,11 +94,7 @@
             align-items: center;
             gap: 8px;
         }
-
-        .sidebar-title::before {
-            content: "🌿";
-            font-size: 1.2em;
-        }
+        .sidebar-title::before { content: "🌿"; font-size: 1.2em; }
 
         .new-chat-btn {
             background: linear-gradient(135deg, var(--nahida-green-light), var(--nahida-green-dark));
@@ -129,7 +111,6 @@
             transition: all var(--transition-fast);
             box-shadow: 0 2px 8px rgba(86, 171, 47, 0.3);
         }
-
         .new-chat-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(86, 171, 47, 0.4);
@@ -150,7 +131,6 @@
             align-items: center;
             transition: all var(--transition-fast);
         }
-
         .icon-button:hover {
             background: rgba(86, 171, 47, 0.2);
             transform: scale(1.1);
@@ -161,15 +141,8 @@
             overflow-y: auto;
             padding: 12px;
         }
-
-        .history-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .history-list::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
+        .history-list::-webkit-scrollbar { width: 6px; }
+        .history-list::-webkit-scrollbar-track { background: transparent; }
         .history-list::-webkit-scrollbar-thumb {
             background: rgba(86, 171, 47, 0.3);
             border-radius: 3px;
@@ -188,13 +161,11 @@
             background: rgba(255, 255, 255, 0.5);
             border: 1px solid transparent;
         }
-
         .history-item:hover {
             background: rgba(168, 224, 99, 0.2);
             border-color: rgba(86, 171, 47, 0.2);
             transform: translateX(4px);
         }
-
         .history-item.active {
             background: linear-gradient(135deg, rgba(168, 224, 99, 0.3), rgba(86, 171, 47, 0.2));
             border-color: var(--nahida-green-light);
@@ -220,21 +191,31 @@
             opacity: 0;
             transition: all var(--transition-fast);
         }
-
         .history-item:hover .delete-btn {
             display: flex;
             opacity: 1;
             transform: translateY(-50%) scale(1);
         }
 
-        .delete-btn:hover {
-            background: #ff4444;
-            transform: translateY(-50%) scale(1.1) !important;
-        }
-
         .sidebar-footer {
             padding: 16px;
             border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .settings-btn {
+            width: 100%;
+            background: rgba(86, 171, 47, 0.1);
+            border: 1px solid rgba(86, 171, 47, 0.2);
+            color: var(--nahida-green-dark);
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all var(--transition-fast);
+            margin-bottom: 10px;
+        }
+        .settings-btn:hover {
+            background: rgba(86, 171, 47, 0.2);
         }
 
         .clear-history-btn {
@@ -248,7 +229,6 @@
             font-size: 0.9em;
             transition: all var(--transition-fast);
         }
-
         .clear-history-btn:hover {
             background: rgba(255, 107, 107, 0.2);
         }
@@ -298,13 +278,11 @@
             gap: 10px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-
         .header-title::before {
             content: "🌱";
             font-size: 1.4em;
             animation: bounce 2s infinite;
         }
-
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-5px); }
@@ -328,12 +306,10 @@
             border-radius: 50%;
             transition: all var(--transition-fast);
         }
-
         .header-button:hover {
             background: rgba(255, 255, 255, 0.3);
             transform: scale(1.1);
         }
-
         .header-button svg {
             width: 22px;
             height: 22px;
@@ -349,22 +325,11 @@
             gap: 20px;
             scroll-behavior: smooth;
         }
-
-        .chat-box::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .chat-box::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
+        .chat-box::-webkit-scrollbar { width: 8px; }
+        .chat-box::-webkit-scrollbar-track { background: transparent; }
         .chat-box::-webkit-scrollbar-thumb {
             background: rgba(86, 171, 47, 0.3);
             border-radius: 4px;
-        }
-
-        .chat-box::-webkit-scrollbar-thumb:hover {
-            background: rgba(86, 171, 47, 0.5);
         }
 
         .messages {
@@ -381,23 +346,14 @@
             max-width: 85%;
             animation: messageSlideIn 0.4s ease-out;
         }
-
         @keyframes messageSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
         .message-wrapper.user {
             align-self: flex-end;
             flex-direction: row-reverse;
         }
-
         .message-wrapper.assistant {
             align-self: flex-start;
         }
@@ -412,10 +368,7 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             transition: transform var(--transition-fast);
         }
-
-        .avatar:hover {
-            transform: scale(1.1);
-        }
+        .avatar:hover { transform: scale(1.1); }
 
         .message-bubble {
             display: flex;
@@ -434,13 +387,11 @@
             position: relative;
             transition: all var(--transition-fast);
         }
-
         .message-wrapper.user .message-content {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-bottom-right-radius: 6px;
         }
-
         .message-wrapper.assistant .message-content {
             background: linear-gradient(135deg, var(--nahida-cream) 0%, #e8f5e9 100%);
             color: var(--text-primary);
@@ -458,7 +409,6 @@
             animation: blink 1s infinite;
             vertical-align: middle;
         }
-
         @keyframes blink {
             0%, 50% { opacity: 1; }
             51%, 100% { opacity: 0; }
@@ -472,12 +422,10 @@
             box-shadow: var(--shadow-soft);
             transition: all var(--transition-medium);
         }
-
         .message-image-container:hover {
             transform: scale(1.02);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
-
         .message-image {
             max-width: 100%;
             max-height: 400px;
@@ -485,10 +433,7 @@
             opacity: 0;
             transition: opacity 0.5s ease;
         }
-
-        .message-image.loaded {
-            opacity: 1;
-        }
+        .message-image.loaded { opacity: 1; }
 
         .image-loading {
             position: absolute;
@@ -501,7 +446,6 @@
             gap: 10px;
             color: var(--nahida-green-dark);
         }
-
         .loading-spinner {
             width: 40px;
             height: 40px;
@@ -510,22 +454,7 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .image-placeholder {
-            background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
-            border-radius: 16px;
-            padding: 40px 60px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            color: var(--text-secondary);
-            font-size: 0.9em;
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* 输入区域 */
         .chat-input-container {
@@ -533,7 +462,6 @@
             background: rgba(255, 255, 255, 0.8);
             border-top: 1px solid rgba(0, 0, 0, 0.05);
         }
-
         .chat-input {
             display: flex;
             gap: 12px;
@@ -545,7 +473,6 @@
             border: 2px solid transparent;
             transition: all var(--transition-fast);
         }
-
         .chat-input:focus-within {
             border-color: var(--nahida-green-light);
             box-shadow: 0 4px 20px rgba(86, 171, 47, 0.2);
@@ -563,10 +490,7 @@
             max-height: 120px;
             font-family: inherit;
         }
-
-        #message-input::placeholder {
-            color: #aaa;
-        }
+        #message-input::placeholder { color: #aaa; }
 
         #send-button {
             background: linear-gradient(135deg, var(--nahida-green-light), var(--nahida-green-dark));
@@ -583,22 +507,18 @@
             flex-shrink: 0;
             box-shadow: 0 2px 8px rgba(86, 171, 47, 0.3);
         }
-
         #send-button:hover:not(:disabled) {
             transform: scale(1.1);
             box-shadow: 0 4px 15px rgba(86, 171, 47, 0.4);
         }
-
         #send-button:disabled {
             background: #ccc;
             cursor: not-allowed;
             box-shadow: none;
         }
-
         #send-button.stop-mode {
             background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
         }
-
         #send-button svg {
             width: 20px;
             height: 20px;
@@ -611,30 +531,204 @@
             color: var(--text-secondary);
             animation: fadeIn 0.8s ease-out;
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .welcome-icon {
             font-size: 4em;
             margin-bottom: 20px;
             animation: float 3s ease-in-out infinite;
         }
-
         .welcome-title {
             font-size: 1.8em;
             font-weight: 600;
             color: var(--nahida-green-dark);
             margin-bottom: 12px;
         }
-
         .welcome-subtitle {
             font-size: 1em;
             max-width: 400px;
             margin: 0 auto;
             line-height: 1.6;
+        }
+
+        /* 设置面板 */
+        .settings-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-medium);
+        }
+        .settings-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .settings-panel {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9) translateY(20px);
+            transition: all var(--transition-medium);
+        }
+        .settings-modal.active .settings-panel {
+            transform: scale(1) translateY(0);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(86, 171, 47, 0.1);
+        }
+        .settings-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: var(--nahida-green-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 1.8em;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all var(--transition-fast);
+        }
+        .settings-close:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #666;
+        }
+
+        .settings-section {
+            margin-bottom: 25px;
+        }
+        .settings-section-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.9em;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 0.95em;
+            font-family: inherit;
+            transition: all var(--transition-fast);
+            background: #fafafa;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--nahida-green-light);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(168, 224, 99, 0.1);
+        }
+        .form-input::placeholder { color: #bbb; }
+
+        .form-hint {
+            font-size: 0.8em;
+            color: #999;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        .settings-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(86, 171, 47, 0.1);
+        }
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            border: none;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--nahida-green-light), var(--nahida-green-dark));
+            color: white;
+            box-shadow: 0 4px 15px rgba(86, 171, 47, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(86, 171, 47, 0.4);
+        }
+        .btn-secondary {
+            background: #f0f0f0;
+            color: var(--text-secondary);
+        }
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .settings-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        .settings-status.success {
+            background: rgba(86, 171, 47, 0.1);
+            color: var(--nahida-green-dark);
+        }
+        .settings-status.error {
+            background: rgba(255, 107, 107, 0.1);
+            color: #ff6b6b;
+        }
+        .settings-status.warning {
+            background: rgba(255, 193, 7, 0.1);
+            color: #f9a825;
         }
 
         /* 响应式设计 */
@@ -643,55 +737,17 @@
                 width: 85%;
                 max-width: 300px;
             }
-
-            .chat-wrapper {
-                padding: 10px;
-            }
-
-            .chat-container {
-                border-radius: 16px;
-            }
-
-            .message-wrapper {
-                max-width: 95%;
-            }
-
-            .header-title {
-                font-size: 1.1em;
-            }
-
-            .welcome-message {
-                padding: 40px 16px;
-            }
-
-            .welcome-icon {
-                font-size: 3em;
-            }
-
-            .welcome-title {
-                font-size: 1.4em;
-            }
+            .chat-wrapper { padding: 10px; }
+            .chat-container { border-radius: 16px; }
+            .message-wrapper { max-width: 95%; }
+            .header-title { font-size: 1.1em; }
+            .welcome-message { padding: 40px 16px; }
+            .welcome-icon { font-size: 3em; }
+            .welcome-title { font-size: 1.4em; }
+            .settings-panel { padding: 20px; }
         }
 
-        /* 空状态提示 */
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: var(--text-secondary);
-        }
-
-        .empty-state-icon {
-            font-size: 3em;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-
-        .empty-state-text {
-            font-size: 0.95em;
-        }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -710,7 +766,10 @@
                 <button class="new-chat-btn" id="new-chat-btn-sidebar">
                     <span>+</span> 新对话
                 </button>
-                <button class="clear-history-btn" id="clear-history-btn" style="margin-top: 10px;">
+                <button class="settings-btn" id="settings-btn-sidebar">
+                    ⚙️ 设置
+                </button>
+                <button class="clear-history-btn" id="clear-history-btn">
                     🗑️ 清空历史
                 </button>
             </div>
@@ -726,16 +785,22 @@
                         </svg>
                     </button>
                     <div class="header-title">与纳西妲的奇妙旅程</div>
-                    <button class="header-button" id="new-chat-btn-header" title="新对话">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                        </svg>
-                    </button>
+                    <div class="header-buttons">
+                        <button class="header-button" id="settings-btn-header" title="设置">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.49l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                            </svg>
+                        </button>
+                        <button class="header-button" id="new-chat-btn-header" title="新对话">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="chat-box" id="chat-box">
                     <div class="messages" id="messages">
-                        <!-- 欢迎消息 -->
                         <div class="welcome-message">
                             <div class="welcome-icon">🌱</div>
                             <div class="welcome-title">你好呀，旅行者~</div>
@@ -766,6 +831,70 @@
         </div>
     </div>
 
+    <!-- 设置面板 -->
+    <div class="settings-modal" id="settings-modal">
+        <div class="settings-panel">
+            <div class="settings-header">
+                <div class="settings-title">⚙️ 设置</div>
+                <button class="settings-close" id="settings-close">&times;</button>
+            </div>
+
+            <div id="settings-status" class="settings-status hidden"></div>
+
+            <div class="settings-section">
+                <div class="settings-section-title">🔑 API 配置</div>
+                <div class="form-group">
+                    <label class="form-label">SiliconFlow API Key *</label>
+                    <input type="password" class="form-input" id="setting-api-key" placeholder="sk-xxxxxxxxxxxxxxxx">
+                    <div class="form-hint">从 <a href="https://siliconflow.cn/" target="_blank">siliconflow.cn</a> 获取你的 API Key</div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title">🤖 模型配置</div>
+                <div class="form-group">
+                    <label class="form-label">对话模型</label>
+                    <select class="form-select" id="setting-chat-model">
+                        <option value="deepseek-ai/DeepSeek-V3.1">DeepSeek-V3.1</option>
+                        <option value="moonshotai/Kimi-K2-Instruct-0905">Kimi-K2</option>
+                        <option value="Qwen/Qwen2.5-72B-Instruct">Qwen2.5-72B</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">图像生成模型</label>
+                    <select class="form-select" id="setting-image-model">
+                        <option value="Qwen/Qwen-Image">Qwen-Image</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">语音合成模型</label>
+                    <select class="form-select" id="setting-tts-model">
+                        <option value="IndexTeam/IndexTTS-2">IndexTTS-2</option>
+                        <option value="FunAudioLLM/CosyVoice2-0.5B">CosyVoice2-0.5B</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title">🎨 生成参数</div>
+                <div class="form-group">
+                    <label class="form-label">Temperature (创造性)</label>
+                    <input type="number" class="form-input" id="setting-temperature" min="0" max="2" step="0.1" value="0.7">
+                    <div class="form-hint">0-2 之间，值越高创造性越强</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Max Tokens (最大长度)</label>
+                    <input type="number" class="form-input" id="setting-max-tokens" min="100" max="4096" step="100" value="2048">
+                </div>
+            </div>
+
+            <div class="settings-actions">
+                <button class="btn btn-secondary" id="settings-cancel">取消</button>
+                <button class="btn btn-primary" id="settings-save">保存设置</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ==================== DOM 元素 ====================
         const elements = {
@@ -783,13 +912,96 @@
             sidebarToggleBtn: document.getElementById('sidebar-toggle-btn'),
             clearHistoryBtn: document.getElementById('clear-history-btn'),
             bgParticles: document.getElementById('bg-particles'),
+            // 设置相关
+            settingsModal: document.getElementById('settings-modal'),
+            settingsClose: document.getElementById('settings-close'),
+            settingsCancel: document.getElementById('settings-cancel'),
+            settingsSave: document.getElementById('settings-save'),
+            settingsBtnHeader: document.getElementById('settings-btn-header'),
+            settingsBtnSidebar: document.getElementById('settings-btn-sidebar'),
+            settingsStatus: document.getElementById('settings-status'),
+            // 设置表单
+            settingApiKey: document.getElementById('setting-api-key'),
+            settingChatModel: document.getElementById('setting-chat-model'),
+            settingImageModel: document.getElementById('setting-image-model'),
+            settingTtsModel: document.getElementById('setting-tts-model'),
+            settingTemperature: document.getElementById('setting-temperature'),
+            settingMaxTokens: document.getElementById('setting-max-tokens'),
         };
 
-        // ==================== 图标 SVG ====================
         const icons = {
             send: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>`,
             stop: `<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12"/></svg>`,
         };
+
+        // ==================== 配置管理 ====================
+        const defaultSettings = {
+            apiKey: '',
+            chatModel: 'deepseek-ai/DeepSeek-V3.1',
+            imageModel: 'Qwen/Qwen-Image',
+            ttsModel: 'IndexTeam/IndexTTS-2',
+            temperature: 0.7,
+            maxTokens: 2048,
+        };
+
+        let settings = { ...defaultSettings };
+
+        function loadSettings() {
+            try {
+                const saved = localStorage.getItem('nahidaSettings');
+                if (saved) {
+                    settings = { ...defaultSettings, ...JSON.parse(saved) };
+                }
+            } catch (e) {
+                console.error('加载设置失败:', e);
+            }
+        }
+
+        function saveSettings() {
+            try {
+                localStorage.setItem('nahidaSettings', JSON.stringify(settings));
+            } catch (e) {
+                console.error('保存设置失败:', e);
+            }
+        }
+
+        function applySettingsToForm() {
+            elements.settingApiKey.value = settings.apiKey;
+            elements.settingChatModel.value = settings.chatModel;
+            elements.settingImageModel.value = settings.imageModel;
+            elements.settingTtsModel.value = settings.ttsModel;
+            elements.settingTemperature.value = settings.temperature;
+            elements.settingMaxTokens.value = settings.maxTokens;
+        }
+
+        function collectSettingsFromForm() {
+            return {
+                apiKey: elements.settingApiKey.value.trim(),
+                chatModel: elements.settingChatModel.value,
+                imageModel: elements.settingImageModel.value,
+                ttsModel: elements.settingTtsModel.value,
+                temperature: parseFloat(elements.settingTemperature.value),
+                maxTokens: parseInt(elements.settingMaxTokens.value),
+            };
+        }
+
+        function showSettingsStatus(message, type) {
+            elements.settingsStatus.textContent = message;
+            elements.settingsStatus.className = `settings-status ${type}`;
+            elements.settingsStatus.classList.remove('hidden');
+            setTimeout(() => {
+                elements.settingsStatus.classList.add('hidden');
+            }, 5000);
+        }
+
+        function openSettings() {
+            applySettingsToForm();
+            elements.settingsModal.classList.add('active');
+        }
+
+        function closeSettings() {
+            elements.settingsModal.classList.remove('active');
+        }
 
         // ==================== 状态管理 ====================
         const state = {
@@ -803,6 +1015,7 @@
 
         // ==================== 初始化 ====================
         function init() {
+            loadSettings();
             createBackgroundParticles();
             loadSessions();
             setupEventListeners();
@@ -816,9 +1029,16 @@
             renderHistoryList();
             toggleSidebar(true);
             adjustTextareaHeight();
+
+            // 检查是否需要显示设置
+            if (!settings.apiKey) {
+                setTimeout(() => {
+                    openSettings();
+                    showSettingsStatus('请先配置 API Key 才能开始使用', 'warning');
+                }, 500);
+            }
         }
 
-        // 创建背景粒子
         function createBackgroundParticles() {
             const particleCount = 20;
             for (let i = 0; i < particleCount; i++) {
@@ -839,6 +1059,26 @@
             elements.sidebarCollapseBtn.addEventListener('click', () => toggleSidebar(true));
             elements.sidebarToggleBtn.addEventListener('click', () => toggleSidebar(false));
             elements.clearHistoryBtn.addEventListener('click', clearAllHistory);
+            
+            // 设置面板事件
+            elements.settingsBtnHeader.addEventListener('click', openSettings);
+            elements.settingsBtnSidebar.addEventListener('click', openSettings);
+            elements.settingsClose.addEventListener('click', closeSettings);
+            elements.settingsCancel.addEventListener('click', closeSettings);
+            elements.settingsModal.addEventListener('click', (e) => {
+                if (e.target === elements.settingsModal) closeSettings();
+            });
+            elements.settingsSave.addEventListener('click', () => {
+                const newSettings = collectSettingsFromForm();
+                if (!newSettings.apiKey) {
+                    showSettingsStatus('请输入 API Key', 'error');
+                    return;
+                }
+                settings = newSettings;
+                saveSettings();
+                showSettingsStatus('设置已保存！', 'success');
+                setTimeout(closeSettings, 800);
+            });
             
             // 输入框自动调整高度
             elements.messageInput.addEventListener('input', adjustTextareaHeight);
@@ -868,42 +1108,45 @@
             const messageText = elements.messageInput.value.trim();
             if (!messageText) return;
 
-            // 清空输入框并调整高度
+            // 检查 API Key
+            if (!settings.apiKey) {
+                openSettings();
+                showSettingsStatus('请先配置 API Key', 'warning');
+                return;
+            }
+
             elements.messageInput.value = '';
             adjustTextareaHeight();
             
-            // 隐藏欢迎消息
             const welcomeMessage = document.querySelector('.welcome-message');
-            if (welcomeMessage) {
-                welcomeMessage.style.display = 'none';
-            }
+            if (welcomeMessage) welcomeMessage.style.display = 'none';
 
-            // 停止当前音频
             stopCurrentAudio();
-            
-            // 添加用户消息
             addMessage({ text: messageText }, 'user');
             updateHistory(messageText, 'user');
             
-            // 创建 AI 消息占位
             const assistantWrapper = addMessage({ text: '' }, 'assistant');
             const contentElement = assistantWrapper.querySelector('.message-content');
             
-            // 添加打字光标
             const cursor = document.createElement('span');
             cursor.className = 'typing-cursor';
             contentElement.appendChild(cursor);
             
-            // 设置状态
             setGeneratingState(true);
-            
-            // 创建中止控制器
             state.abortController = new AbortController();
             
             try {
                 const response = await fetch('/chat', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-API-Key': settings.apiKey,
+                        'X-Chat-Model': settings.chatModel,
+                        'X-Image-Model': settings.imageModel,
+                        'X-TTS-Model': settings.ttsModel,
+                        'X-Temperature': settings.temperature,
+                        'X-Max-Tokens': settings.maxTokens,
+                    },
                     body: JSON.stringify({
                         message: messageText,
                         history: getSessionHistory(),
@@ -967,7 +1210,6 @@
                 }
             }
 
-            // 完成处理
             if (fullResponse) {
                 finalizeMessage(fullResponse, wrapper);
             }
@@ -1073,16 +1315,12 @@
 
         // ==================== 图片处理 ====================
         function appendImage(bubble, imageUrl) {
-            // 移除已存在的图片加载占位符
             const existingPlaceholder = bubble.querySelector('.image-placeholder');
-            if (existingPlaceholder) {
-                existingPlaceholder.remove();
-            }
+            if (existingPlaceholder) existingPlaceholder.remove();
 
             const container = document.createElement('div');
             container.className = 'message-image-container';
             
-            // 加载动画
             const loadingDiv = document.createElement('div');
             loadingDiv.className = 'image-loading';
             loadingDiv.innerHTML = `
@@ -1140,12 +1378,10 @@
             
             bubble.appendChild(content);
             
-            // 添加图片占位符（AI 消息）
             if (role === 'assistant' && !data.image_url) {
                 bubble.appendChild(createImagePlaceholder());
             }
             
-            // 恢复已有图片
             if (data.image_url) {
                 appendImage(bubble, data.image_url);
             }
@@ -1178,7 +1414,6 @@
             state.sessions[newId] = [{ role: 'system', content: 'New Chat' }];
             state.activeSessionId = newId;
             
-            // 显示欢迎消息
             elements.messagesContainer.innerHTML = `
                 <div class="welcome-message">
                     <div class="welcome-icon">🌱</div>
@@ -1194,9 +1429,7 @@
             renderHistoryList();
             enableInput(true);
             
-            if (collapseSidebar) {
-                toggleSidebar(true);
-            }
+            if (collapseSidebar) toggleSidebar(true);
         }
 
         function loadSession(sessionId) {
@@ -1209,7 +1442,6 @@
             const messages = state.sessions[sessionId].slice(1);
             
             if (messages.length === 0) {
-                // 显示欢迎消息
                 elements.messagesContainer.innerHTML = `
                     <div class="welcome-message">
                         <div class="welcome-icon">🌱</div>
@@ -1289,9 +1521,7 @@
             elements.sendButton.disabled = !isEnabled && !state.isGenerating;
             elements.messageInput.disabled = !isEnabled;
             
-            if (isEnabled) {
-                elements.messageInput.focus();
-            }
+            if (isEnabled) elements.messageInput.focus();
         }
 
         function toggleSidebar(collapse) {
@@ -1321,9 +1551,7 @@
                     item.className = 'history-item';
                     item.dataset.id = id;
                     
-                    if (id === state.activeSessionId) {
-                        item.classList.add('active');
-                    }
+                    if (id === state.activeSessionId) item.classList.add('active');
                     
                     item.textContent = title.substring(0, 20) + (title.length > 20 ? '...' : '');
                     

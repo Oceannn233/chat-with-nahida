@@ -16,68 +16,8 @@ from flask import Flask, render_template, request, Response
 from openai import OpenAI
 from dotenv import load_dotenv
 
-# 加载环境变量
+# 加载环境变量（可选，用于服务器端配置默认值）
 load_dotenv()
-
-# ==================== 配置管理 ====================
-
-@dataclass
-class AppConfig:
-    """应用配置类"""
-    # API 配置
-    api_key: str
-    base_url: str = "https://api.siliconflow.cn/v1"
-    
-    # 模型配置
-    chat_model: str = "deepseek-ai/DeepSeek-V3.1"
-    prompt_engineer_model: str = "zai-org/GLM-4.5"
-    image_model: str = "Qwen/Qwen-Image"
-    tts_model: str = "IndexTeam/IndexTTS-2"
-    
-    # 生成参数
-    max_tokens: int = 2048
-    temperature: float = 0.7
-    image_size: str = "928x1664"
-    
-    # 语音配置
-    reference_audio_path: str = "Ref_audio.mp3"
-    text_in_reference_audio: str = (
-        "初次见面，我已经关注你很久了。我叫纳西妲，别看我像个孩子，"
-        "我比任何一位大人都了解这个世界。所以，我可以用我的知识，换取你路上的见闻吗？"
-    )
-    
-    # 服务器配置
-    host: str = "0.0.0.0"
-    port: int = 1027
-    debug: bool = False
-    
-    @classmethod
-    def from_env(cls) -> "AppConfig":
-        """从环境变量加载配置"""
-        api_key = os.getenv("SILICONFLOW_API_KEY")
-        if not api_key:
-            raise ValueError(
-                "❌ 错误：未设置 SILICONFLOW_API_KEY 环境变量！\n"
-                "请复制 .env.example 为 .env 并填入你的 API Key。\n"
-                "获取地址: https://siliconflow.cn/"
-            )
-        
-        return cls(
-            api_key=api_key,
-            base_url=os.getenv("SILICONFLOW_BASE_URL", cls.base_url),
-            chat_model=os.getenv("CHAT_MODEL", cls.chat_model),
-            prompt_engineer_model=os.getenv("PROMPT_ENGINEER_MODEL", cls.prompt_engineer_model),
-            image_model=os.getenv("IMAGE_MODEL", cls.image_model),
-            tts_model=os.getenv("TTS_MODEL", cls.tts_model),
-            max_tokens=int(os.getenv("MAX_TOKENS", cls.max_tokens)),
-            temperature=float(os.getenv("TEMPERATURE", cls.temperature)),
-            reference_audio_path=os.getenv("REFERENCE_AUDIO_PATH", cls.reference_audio_path),
-            text_in_reference_audio=os.getenv("TEXT_IN_REFERENCE_AUDIO", cls.text_in_reference_audio),
-            host=os.getenv("HOST", cls.host),
-            port=int(os.getenv("PORT", cls.port)),
-            debug=os.getenv("DEBUG", "False").lower() == "true",
-        )
-
 
 # ==================== 系统提示词 ====================
 
@@ -124,7 +64,6 @@ Follow this professional workflow:
 * **DO NOT** use bullet points, labels, or any explanations. Combine all chosen elements into one powerful prompt.
 """
 
-
 # ==================== 工具函数 ====================
 
 def encode_audio_to_base64(file_path: str) -> Optional[str]:
@@ -155,19 +94,65 @@ def create_sse_message(data: Dict[str, Any]) -> str:
     return f"data: {json.dumps(data, ensure_ascii=False)}\n\n"
 
 
+# ==================== 用户配置类 ====================
+
+@dataclass
+class UserConfig:
+    """用户配置，从请求头中读取"""
+    api_key: str
+    chat_model: str = "deepseek-ai/DeepSeek-V3.1"
+    prompt_engineer_model: str = "zai-org/GLM-4.5"
+    image_model: str = "Qwen/Qwen-Image"
+    tts_model: str = "IndexTeam/IndexTTS-2"
+    max_tokens: int = 2048
+    temperature: float = 0.7
+    image_size: str = "928x1664"
+    
+    @classmethod
+    def from_headers(cls, headers) -> "UserConfig":
+        """从请求头中读取配置"""
+        api_key = headers.get("X-API-Key", "")
+        
+        # 如果没有提供 API Key，尝试从环境变量读取（服务器端配置）
+        if not api_key:
+            api_key = os.getenv("SILICONFLOW_API_KEY", "")
+        
+        return cls(
+            api_key=api_key,
+            chat_model=headers.get("X-Chat-Model", "deepseek-ai/DeepSeek-V3.1"),
+            image_model=headers.get("X-Image-Model", "Qwen/Qwen-Image"),
+            tts_model=headers.get("X-TTS-Model", "IndexTeam/IndexTTS-2"),
+            temperature=float(headers.get("X-Temperature", 0.7)),
+            max_tokens=int(headers.get("X-Max-Tokens", 2048)),
+        )
+    
+    def validate(self) -> Optional[str]:
+        """验证配置是否有效"""
+        if not self.api_key:
+            return "请先配置 SiliconFlow API Key"
+        if not self.api_key.startswith("sk-"):
+            return "API Key 格式不正确，应以 sk- 开头"
+        return None
+
+
 # ==================== AI 服务类 ====================
 
 class AIService:
     """AI 服务管理类"""
     
-    def __init__(self, config: AppConfig):
+    def __init__(self, config: UserConfig):
         self.config = config
-        self.client = OpenAI(api_key=config.api_key, base_url=config.base_url)
+        self.client = OpenAI(
+            api_key=config.api_key, 
+            base_url="https://api.siliconflow.cn/v1"
+        )
         self.reference_audio_base64 = self._load_reference_audio()
     
     def _load_reference_audio(self) -> Optional[str]:
         """加载参考音频"""
-        audio_base64 = encode_audio_to_base64(self.config.reference_audio_path)
+        # 优先从环境变量获取路径，否则使用默认路径
+        audio_path = os.getenv("REFERENCE_AUDIO_PATH", "Ref_audio.mp3")
+        audio_base64 = encode_audio_to_base64(audio_path)
         if audio_base64:
             logging.info("✅ 参考音频加载成功")
         return audio_base64
@@ -245,6 +230,12 @@ class AIService:
                 logging.warning("⚠️ 参考音频未加载，跳过语音生成")
                 return None
             
+            # 从环境变量获取参考音频文本，或使用默认文本
+            ref_text = os.getenv(
+                "TEXT_IN_REFERENCE_AUDIO",
+                "初次见面，我已经关注你很久了。我叫纳西妲，别看我像个孩子，我比任何一位大人都了解这个世界。所以，我可以用我的知识，换取你路上的见闻吗？"
+            )
+            
             response = self.client.audio.speech.create(
                 model=self.config.tts_model,
                 input=text,
@@ -253,7 +244,7 @@ class AIService:
                 extra_body={
                     "references": [{
                         "audio": self.reference_audio_base64,
-                        "text": self.config.text_in_reference_audio
+                        "text": ref_text
                     }]
                 }
             )
@@ -276,16 +267,32 @@ def create_app() -> Flask:
         format="%(asctime)s - %(levelname)s - %(message)s"
     )
     
-    # 加载配置
-    config = AppConfig.from_env()
-    ai_service = AIService(config)
-    
     @app.route("/")
     def index():
         return render_template("index.html")
     
     @app.route("/chat", methods=["POST"])
     def chat():
+        # 从请求头中读取用户配置
+        config = UserConfig.from_headers(request.headers)
+        
+        # 验证配置
+        error = config.validate()
+        if error:
+            return Response(
+                create_sse_message({"type": "error", "content": error}),
+                mimetype="text/event-stream"
+            )
+        
+        # 创建 AI 服务实例
+        try:
+            ai_service = AIService(config)
+        except Exception as e:
+            return Response(
+                create_sse_message({"type": "error", "content": f"初始化服务失败: {str(e)}"}),
+                mimetype="text/event-stream"
+            )
+        
         data = request.json
         user_message = data.get("message", "").strip()
         history = data.get("history", [])
@@ -351,17 +358,22 @@ def create_app() -> Flask:
         
         return Response(event_stream(), mimetype="text/event-stream")
     
-    return app, config
+    return app
 
 
 # ==================== 主入口 ====================
 
 if __name__ == "__main__":
-    app, config = create_app()
+    app = create_app()
+    
+    # 从环境变量读取服务器配置
+    host = os.getenv("HOST", "0.0.0.0")
+    port = int(os.getenv("PORT", 1027))
+    debug = os.getenv("DEBUG", "False").lower() == "true"
     
     logging.info("=" * 50)
     logging.info("🌱 纳西妲 AI 对话应用启动中...")
-    logging.info(f"🌐 请访问: http://127.0.0.1:{config.port}")
+    logging.info(f"🌐 请访问: http://127.0.0.1:{port}")
     logging.info("=" * 50)
     
-    app.run(host=config.host, port=config.port, debug=config.debug)
+    app.run(host=host, port=port, debug=debug)
