@@ -31,7 +31,7 @@
             color: var(--text-primary);
         }
 
-        /* 背景粒子 */
+        /* 背景飘落的花瓣 */
         .bg-particles {
             position: fixed;
             top: 0; left: 0;
@@ -40,18 +40,30 @@
             overflow: hidden;
             z-index: 0;
         }
-        .particle {
+        .petal {
             position: absolute;
-            width: 6px; height: 6px;
-            background: rgba(168, 224, 99, 0.4);
-            border-radius: 50%;
-            animation: float 15s infinite ease-in-out;
+            width: 10px; 
+            height: 10px;
+            background: rgba(168, 224, 99, 0.6);
+            border-radius: 50% 0 50% 50%;
+            animation: fall linear infinite;
+            opacity: 0;
         }
-        @keyframes float {
-            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(110vh) translateX(50px) rotate(360deg);
+                opacity: 0;
+            }
         }
 
         /* 主容器 */
